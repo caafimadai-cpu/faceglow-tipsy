@@ -54,15 +54,15 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({ onImageSelect }) => {
             {isDragActive ? (
               <div className="space-y-4">
                 <ImageIcon className="w-12 h-12 mx-auto text-primary animate-pulse" />
-                <p className="text-lg font-medium text-primary">Drop your image here</p>
+                <p className="text-lg font-medium text-primary">Halkan dhig sawirkaaga</p>
               </div>
             ) : (
               <div className="space-y-4">
                 <Upload className="w-12 h-12 mx-auto text-muted-foreground" />
                 <div>
-                  <p className="text-lg font-medium">Drag & drop your photo here</p>
+                  <p className="text-lg font-medium">Sawirkaaga halkan soo jiid ama riix</p>
                   <p className="text-sm text-muted-foreground mt-1">
-                    or click to select a file
+                    ama guji si aad u doorato faylka
                   </p>
                 </div>
               </div>

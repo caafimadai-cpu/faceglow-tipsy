@@ -34,12 +34,11 @@ const analyzeImage = async (file: File) => {
 
   const result = await response.json();
   
-  // Transform to component format
+  // Transform to component format - handle both Somali and English field names
   return {
-    score: result.beautyScore,
-    hydration: result.skinHealth.hydration,
-    concerns: result.recommendations.slice(0, 4),
-    recommendations: result.recommendations
+    hydration: result.skinHealth?.qoyaan || result.skinHealth?.hydration || 70,
+    concerns: result.walaacyo || [],
+    recommendations: result.talooyinka || result.recommendations || []
   };
 };
 
@@ -55,8 +54,8 @@ const Index = () => {
       setAnalysisResults(results);
     } catch (error) {
       toast({
-        title: "Analysis Failed",
-        description: "There was an error analyzing your image. Please try again.",
+        title: "Falanqayntu Waa Fashilantay",
+        description: "Waxaa jirtay khalad la falanqaynaya sawirkaaga. Fadlan mar kale isku day.",
         variant: "destructive"
       });
     } finally {
@@ -67,9 +66,9 @@ const Index = () => {
   return (
     <div className="min-h-screen py-12 px-4 sm:px-6 lg:px-8 space-y-12">
       <div className="text-center space-y-4">
-        <h1 className="text-4xl font-bold tracking-tight">Facial Analysis</h1>
+        <h1 className="text-4xl font-bold tracking-tight">Falanqaynta Wejiga</h1>
         <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-          Upload your photo for a detailed analysis of your skin health and personalized recommendations
+          Soo rar sawirkaaga si aad u hesho falanqayn faahfaahsan oo ku saabsan caafimaadka maqaarkaaga iyo talooyinka gaarka ah
         </p>
       </div>
 
@@ -78,7 +77,7 @@ const Index = () => {
       {isAnalyzing && (
         <div className="flex flex-col items-center gap-4 animate-fadeIn">
           <Loader2 className="w-8 h-8 animate-spin text-primary" />
-          <p className="text-sm text-muted-foreground">Analyzing your image...</p>
+          <p className="text-sm text-muted-foreground">Sawirkaaga waan ku falanqaynaynaa...</p>
         </div>
       )}
 

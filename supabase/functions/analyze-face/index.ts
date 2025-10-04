@@ -46,13 +46,12 @@ serve(async (req) => {
             content: [
               {
                 type: 'text',
-                text: `Analyze this face photo and provide a detailed assessment. Return a JSON object with:
-1. beautyScore (0-100): Overall attractiveness rating
-2. skinHealth object with: hydration (0-100), clarity (0-100), texture (0-100)
-3. recommendations: array of 5-6 specific skincare tips
-4. features object with: skinTone (description), estimatedAge (number)
+                text: `Sawirkan weji ku falanqee oo si faahfaahsan u bixi qiimayn. Ku bixi JSON object leh:
+1. skinHealth object leh: qoyaan (0-100), nadiifnimo (0-100), dhadhanka (0-100)
+2. talooyinka: array ah 5-6 talo gaar ah oo daryeelka maqaarka ah
+3. features object leh: midabka maqaarka (sharaxaad), da'da qiyaasta ah (nambar)
 
-Be honest but constructive. Focus on skin health and beauty enhancement tips.`
+Noqo daacad laakiin waxtar leh. Diirada saar caafimaadka maqaarka iyo talooyinka hagaajinta quruxda. Dhammaan jawaabta ku qor Af-Soomaali.`
               },
               {
                 type: 'image_url',
@@ -107,23 +106,22 @@ Be honest but constructive. Focus on skin health and beauty enhancement tips.`
       console.error('Failed to parse AI response, using defaults');
       // Provide default response if parsing fails
       result = {
-        beautyScore: 75,
         skinHealth: {
-          hydration: 70,
-          clarity: 72,
-          texture: 68
+          qoyaan: 70,
+          nadiifnimo: 72,
+          dhadhanka: 68
         },
-        recommendations: [
-          'Maintain good hydration by drinking 8 glasses of water daily',
-          'Use a gentle moisturizer with hyaluronic acid',
-          'Apply SPF 30+ sunscreen every morning',
-          'Get 7-8 hours of quality sleep for skin repair',
-          'Include antioxidant-rich foods in your diet',
-          'Consider vitamin C serum for brightening'
+        talooyinka: [
+          'Ilaali qoyaan wanaagsan adoo cabaya 8 koob oo biyo ah maalintii',
+          'Isticmaal daryeel jilicsan oo leh hyaluronic acid',
+          'Ku dhufasho SPF 30+ subaxdii walba',
+          'Hel 7-8 saacadood oo hurdo tayo leh si maqaarka loo dib u hagaajiyo',
+          'Ku dar cuntooyinka antioxidant-ka badan cuntadaada',
+          'Ka fiirso serum vitamin C si loo iftimiyo'
         ],
         features: {
-          skinTone: 'Even',
-          estimatedAge: 28
+          midabMaqaarka: 'Siman',
+          daQiyaas: 28
         }
       };
     }
