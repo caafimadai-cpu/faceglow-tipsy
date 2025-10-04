@@ -37,6 +37,11 @@ const analyzeImage = async (file: File) => {
   // Transform to component format - handle both Somali and English field names
   return {
     hydration: result.skinHealth?.qoyaan || result.skinHealth?.hydration || 70,
+    clarity: result.skinHealth?.nadiifnimo || result.skinHealth?.clarity,
+    texture: result.skinHealth?.dhadhanka || result.skinHealth?.texture,
+    acne: result.skinHealth?.acne,
+    wrinkles: result.skinHealth?.wrinkles,
+    darkCircles: result.skinHealth?.darkCircles,
     concerns: result.walaacyo || [],
     recommendations: result.talooyinka || result.recommendations || []
   };

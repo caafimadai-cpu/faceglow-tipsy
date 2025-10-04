@@ -47,11 +47,22 @@ serve(async (req) => {
               {
                 type: 'text',
                 text: `Sawirkan weji ku falanqee oo si faahfaahsan u bixi qiimayn. Ku bixi JSON object leh:
-1. skinHealth object leh: qoyaan (0-100), nadiifnimo (0-100), dhadhanka (0-100)
-2. talooyinka: array ah 5-6 talo gaar ah oo daryeelka maqaarka ah
-3. features object leh: midabka maqaarka (sharaxaad), da'da qiyaasta ah (nambar)
+1. skinHealth object leh:
+   - qoyaan (0-100): Heerka qoyaanka maqaarka
+   - nadiifnimo (0-100): Sida nadiifsan ee maqaarka
+   - dhadhanka (0-100): Dhadhanka maqaarka
+   - acne (0-100): Heerar finfinow (100 = ma jiro, 0 = badan)
+   - wrinkles (0-100): Jiiqid (100 = ma jiro, 0 = badan)
+   - darkCircles (0-100): Gariir madow (100 = ma jiro, 0 = badan)
 
-Noqo daacad laakiin waxtar leh. Diirada saar caafimaadka maqaarka iyo talooyinka hagaajinta quruxda. Dhammaan jawaabta ku qor Af-Soomaali.`
+2. talooyinka: array ah 6-8 talo gaar ah oo daryeelka maqaarka ah oo ku salaysan waxyaalaha la arkay
+
+3. features object leh: 
+   - midabMaqaarka (sharaxaad): Midabka maqaarka iyo simaanta
+   - daQiyaas (nambar): Da'da qiyaasta ah
+   - nooMaqaarka (text): Nooca maqaarka (qalalan, engegan, isku dhafan)
+
+Noqo daacad, gaar ah, oo si faahfaahsan u sharax waxaad aragtay. Diirada saar caafimaadka maqaarka. Dhammaan jawaabta ku qor Af-Soomaali.`
               },
               {
                 type: 'image_url',
@@ -109,7 +120,10 @@ Noqo daacad laakiin waxtar leh. Diirada saar caafimaadka maqaarka iyo talooyinka
         skinHealth: {
           qoyaan: 70,
           nadiifnimo: 72,
-          dhadhanka: 68
+          dhadhanka: 68,
+          acne: 85,
+          wrinkles: 90,
+          darkCircles: 75
         },
         talooyinka: [
           'Ilaali qoyaan wanaagsan adoo cabaya 8 koob oo biyo ah maalintii',
@@ -117,11 +131,14 @@ Noqo daacad laakiin waxtar leh. Diirada saar caafimaadka maqaarka iyo talooyinka
           'Ku dhufasho SPF 30+ subaxdii walba',
           'Hel 7-8 saacadood oo hurdo tayo leh si maqaarka loo dib u hagaajiyo',
           'Ku dar cuntooyinka antioxidant-ka badan cuntadaada',
-          'Ka fiirso serum vitamin C si loo iftimiyo'
+          'Ka fiirso serum vitamin C si loo iftimiyo',
+          'Nadiifi wejigaaga laba jeer maalintii',
+          'Isticmaal moisturizer habeenkii'
         ],
         features: {
           midabMaqaarka: 'Siman',
-          daQiyaas: 28
+          daQiyaas: 28,
+          nooMaqaarka: 'Isku dhafan'
         }
       };
     }
