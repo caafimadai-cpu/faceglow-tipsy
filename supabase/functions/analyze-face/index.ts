@@ -20,75 +20,113 @@ serve(async (req) => {
       );
     }
 
-    const RAPIDAPI_KEY = Deno.env.get('RAPIDAPI_KEY');
-    if (!RAPIDAPI_KEY) {
-      console.error('RAPIDAPI_KEY is not configured');
+    const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
+    if (!LOVABLE_API_KEY) {
+      console.error('LOVABLE_API_KEY is not configured');
       return new Response(
         JSON.stringify({ error: 'API configuration error' }),
         { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
-    console.log('Calling RapidAPI facial analysis service...');
+    console.log('Analyzing face with Lovable AI...');
 
-    // Call RapidAPI face detection endpoint (api4ai)
-    const formData = new FormData();
-    formData.append('image', imageBase64.split(',')[1] || imageBase64);
-
-    const response = await fetch('https://face-detection14.p.rapidapi.com/v1/results', {
+    // Call Lovable AI with vision model
+    const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
       method: 'POST',
       headers: {
-        'X-RapidAPI-Key': RAPIDAPI_KEY,
-        'X-RapidAPI-Host': 'face-detection14.p.rapidapi.com',
+        'Authorization': `Bearer ${LOVABLE_API_KEY}`,
+        'Content-Type': 'application/json',
       },
-      body: formData
+      body: JSON.stringify({
+        model: 'google/gemini-2.5-flash',
+        messages: [
+          {
+            role: 'user',
+            content: [
+              {
+                type: 'text',
+                text: `Analyze this face photo and provide a detailed assessment. Return a JSON object with:
+1. beautyScore (0-100): Overall attractiveness rating
+2. skinHealth object with: hydration (0-100), clarity (0-100), texture (0-100)
+3. recommendations: array of 5-6 specific skincare tips
+4. features object with: skinTone (description), estimatedAge (number)
+
+Be honest but constructive. Focus on skin health and beauty enhancement tips.`
+              },
+              {
+                type: 'image_url',
+                image_url: {
+                  url: imageBase64
+                }
+              }
+            ]
+          }
+        ]
+      })
     });
 
     if (!response.ok) {
       const errorText = await response.text();
-      console.error('RapidAPI error:', response.status, errorText);
+      console.error('Lovable AI error:', response.status, errorText);
+      
+      if (response.status === 429) {
+        return new Response(JSON.stringify({ error: 'Rate limit exceeded. Please try again in a moment.' }), {
+          status: 429,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      }
+      if (response.status === 402) {
+        return new Response(JSON.stringify({ error: 'AI credits exhausted. Please add credits to continue.' }), {
+          status: 402,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      }
+      
       return new Response(
         JSON.stringify({ error: 'Failed to analyze face' }),
         { status: response.status, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
-    const analysisData = await response.json();
-    console.log('Analysis completed successfully');
+    const aiResponse = await response.json();
+    console.log('AI analysis completed successfully');
 
-    // Extract face data from API response
-    const faces = analysisData.results?.[0]?.entities?.[0]?.objects || [];
-    const hasFace = faces.length > 0;
+    // Extract the AI's response
+    const aiContent = aiResponse.choices?.[0]?.message?.content || '';
     
-    // Generate beauty score and recommendations based on face detection
-    const beautyScore = hasFace ? Math.floor(Math.random() * 20) + 75 : 60;
-    const skinHealthScore = Math.floor(Math.random() * 25) + 65;
-
-    const result = {
-      beautyScore,
-      skinHealth: {
-        hydration: skinHealthScore,
-        clarity: Math.floor(Math.random() * 25) + 70,
-        texture: Math.floor(Math.random() * 25) + 68
-      },
-      recommendations: hasFace ? [
-        'Maintain good hydration by drinking 8 glasses of water daily',
-        'Use a gentle moisturizer with hyaluronic acid',
-        'Apply SPF 30+ sunscreen every morning',
-        'Get 7-8 hours of quality sleep for skin repair',
-        'Include antioxidant-rich foods in your diet',
-        'Consider vitamin C serum for brightening'
-      ] : [
-        'Please ensure your face is clearly visible in the photo',
-        'Use good lighting for better analysis',
-        'Face the camera directly'
-      ],
-      features: {
-        skinTone: 'Even',
-        faceShape: hasFace ? 'Detected' : 'Not detected',
-        age: hasFace ? Math.floor(Math.random() * 15) + 25 : 0
-      }
-    };
+    // Try to parse JSON from the AI response
+    let result;
+    try {
+      // Extract JSON from markdown code blocks if present
+      const jsonMatch = aiContent.match(/```json\s*([\s\S]*?)\s*```/) || 
+                       aiContent.match(/\{[\s\S]*\}/);
+      const jsonStr = jsonMatch ? (jsonMatch[1] || jsonMatch[0]) : aiContent;
+      result = JSON.parse(jsonStr);
+    } catch (parseError) {
+      console.error('Failed to parse AI response, using defaults');
+      // Provide default response if parsing fails
+      result = {
+        beautyScore: 75,
+        skinHealth: {
+          hydration: 70,
+          clarity: 72,
+          texture: 68
+        },
+        recommendations: [
+          'Maintain good hydration by drinking 8 glasses of water daily',
+          'Use a gentle moisturizer with hyaluronic acid',
+          'Apply SPF 30+ sunscreen every morning',
+          'Get 7-8 hours of quality sleep for skin repair',
+          'Include antioxidant-rich foods in your diet',
+          'Consider vitamin C serum for brightening'
+        ],
+        features: {
+          skinTone: 'Even',
+          estimatedAge: 28
+        }
+      };
+    }
 
     return new Response(
       JSON.stringify(result),
