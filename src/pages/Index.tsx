@@ -4,28 +4,42 @@ import { AnalysisResult } from '@/components/AnalysisResult';
 import { useToast } from '@/components/ui/use-toast';
 import { Loader2 } from 'lucide-react';
 
-// Simulated AI analysis function (replace with actual AI implementation)
+// Real AI analysis using RapidAPI
 const analyzeImage = async (file: File) => {
-  // Simulate API delay
-  await new Promise(resolve => setTimeout(resolve, 2000));
+  // Convert image to base64
+  const reader = new FileReader();
+  const base64Promise = new Promise<string>((resolve) => {
+    reader.onloadend = () => resolve(reader.result as string);
+    reader.readAsDataURL(file);
+  });
   
-  // Mock results (replace with actual AI analysis)
+  const imageBase64 = await base64Promise;
+  
+  // Call the edge function
+  const response = await fetch(
+    `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/analyze-face`,
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+      },
+      body: JSON.stringify({ imageBase64 }),
+    }
+  );
+
+  if (!response.ok) {
+    throw new Error('Analysis failed');
+  }
+
+  const result = await response.json();
+  
+  // Transform to component format
   return {
-    score: 85,
-    hydration: 70,
-    concerns: [
-      "Slight dehydration in T-zone",
-      "Minor texture around chin",
-      "Early signs of sun damage",
-      "Uneven skin tone"
-    ],
-    recommendations: [
-      "Increase water intake to improve skin hydration",
-      "Add a hyaluronic acid serum to your routine",
-      "Use broad-spectrum SPF 30+ daily",
-      "Consider adding vitamin C serum for evening skin tone",
-      "Gentle exfoliation twice weekly"
-    ]
+    score: result.beautyScore,
+    hydration: result.skinHealth.hydration,
+    concerns: result.recommendations.slice(0, 4),
+    recommendations: result.recommendations
   };
 };
 
