@@ -46,7 +46,11 @@ serve(async (req) => {
             content: [
               {
                 type: 'text',
-                text: `Sawirkan weji ku falanqee oo si faahfaahsan u bixi qiimayn. Ku bixi JSON object leh:
+                text: `Sawirkan weji ku falanqee oo si faahfaahsan u bixi qiimayn.
+
+MUHIIM: Waa inaad si sax ah u eegta sawirka oo aad bixisaa qiimayn dhabta ah oo ku salaysan waxa aad aragto. Ha isticmaalin tirooyinka caadiga ah.
+
+Ku bixi JSON object keliya (aan wax markdown ah lahayn) leh:
 1. skinHealth object leh:
    - qoyaan (0-100): Heerka qoyaanka maqaarka
    - nadiifnimo (0-100): Sida nadiifsan ee maqaarka
@@ -111,42 +115,48 @@ Noqo daacad, gaar ah, oo si faahfaahsan u sharax waxaad aragtay. Diirada saar ca
     // Extract the AI's response
     const aiContent = aiResponse.choices?.[0]?.message?.content || '';
     
+    if (!aiContent) {
+      console.error('No content in AI response');
+      return new Response(
+        JSON.stringify({ error: 'AI did not provide analysis. Please try again.' }),
+        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+    
     // Try to parse JSON from the AI response
     let result;
     try {
       // Extract JSON from markdown code blocks if present
       const jsonMatch = aiContent.match(/```json\s*([\s\S]*?)\s*```/) || 
                        aiContent.match(/\{[\s\S]*\}/);
-      const jsonStr = jsonMatch ? (jsonMatch[1] || jsonMatch[0]) : aiContent;
+      
+      if (!jsonMatch) {
+        console.error('No JSON found in AI response:', aiContent);
+        return new Response(
+          JSON.stringify({ error: 'Failed to get valid analysis. Please try uploading the image again.' }),
+          { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+      
+      const jsonStr = jsonMatch[1] || jsonMatch[0];
       result = JSON.parse(jsonStr);
+      
+      // Validate that we have the required fields
+      if (!result.skinHealth || !result.talooyinka) {
+        console.error('Missing required fields in AI response:', result);
+        return new Response(
+          JSON.stringify({ error: 'Incomplete analysis received. Please try again.' }),
+          { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+      
+      console.log('Successfully parsed AI analysis');
     } catch (parseError) {
-      console.error('Failed to parse AI response, using defaults');
-      // Provide default response if parsing fails
-      result = {
-        skinHealth: {
-          qoyaan: 70,
-          nadiifnimo: 72,
-          dhadhanka: 68,
-          acne: 85,
-          wrinkles: 90,
-          darkCircles: 75
-        },
-        talooyinka: [
-          'Ilaali qoyaan wanaagsan adoo cabaya 8 koob oo biyo ah maalintii',
-          'Isticmaal daryeel jilicsan oo leh hyaluronic acid',
-          'Ku dhufasho SPF 30+ subaxdii walba',
-          'Hel 7-8 saacadood oo hurdo tayo leh si maqaarka loo dib u hagaajiyo',
-          'Ku dar cuntooyinka antioxidant-ka badan cuntadaada',
-          'Ka fiirso serum vitamin C si loo iftimiyo',
-          'Nadiifi wejigaaga laba jeer maalintii',
-          'Isticmaal moisturizer habeenkii'
-        ],
-        features: {
-          midabMaqaarka: 'Siman',
-          daQiyaas: 28,
-          nooMaqaarka: 'Isku dhafan'
-        }
-      };
+      console.error('Failed to parse AI response:', parseError, 'Content:', aiContent);
+      return new Response(
+        JSON.stringify({ error: 'Could not process the analysis. Please try uploading your image again.' }),
+        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
     }
 
     return new Response(
