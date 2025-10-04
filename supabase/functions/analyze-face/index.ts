@@ -55,7 +55,13 @@ serve(async (req) => {
    - wrinkles (0-100): Jiiqid (100 = ma jiro, 0 = badan)
    - darkCircles (0-100): Gariir madow (100 = ma jiro, 0 = badan)
 
-2. talooyinka: array ah 6-8 talo gaar ah oo daryeelka maqaarka ah oo ku salaysan waxyaalaha la arkay
+2. talooyinka: array ah 6-8 talo GAAR AH oo daryeelka maqaarka ah oo ku salaysan waxyaalaha la arkay. 
+   MUHIIM: Talooyinku waa inay si toos ah ugu xiran yihiin heerarka aad heshay:
+   - Haddii qoyaanku hooseeyo 70, bixi talooyinka xoojinta qoyaanka
+   - Haddii finfinowgu hooseeyo 80, bixi talooyinka finfinowga ka hortagga
+   - Haddii jiiqidku hooseeyo 85, bixi talooyinka anti-aging
+   - Haddii gariir madowgu hooseeyo 80, bixi talooyinka indhaha daryeelka
+   Talooyinku ha noqdaan kuwo gaar ah oo ku salaysan dhibaatooyinka la arkay, maaha talooyinka guud.
 
 3. features object leh: 
    - midabMaqaarka (sharaxaad): Midabka maqaarka iyo simaanta
