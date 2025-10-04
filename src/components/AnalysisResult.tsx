@@ -1,5 +1,5 @@
 import React from 'react';
-import { Droplet, Sun, Shield, Sparkles, AlertCircle, Frown } from 'lucide-react';
+import { Droplet, Sun, Shield, Sparkles, AlertCircle, Waves } from 'lucide-react';
 
 interface AnalysisResultProps {
   results: {
@@ -20,7 +20,7 @@ export const AnalysisResult: React.FC<AnalysisResultProps> = ({ results }) => {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div className="analysis-card">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-semibold">Qoyaan</h3>
+            <h3 className="text-lg font-semibold">Hydration [Qoyaan]</h3>
             <Droplet className="w-5 h-5 text-primary" />
           </div>
           <div className="relative h-4 bg-secondary rounded-full overflow-hidden">
@@ -37,7 +37,7 @@ export const AnalysisResult: React.FC<AnalysisResultProps> = ({ results }) => {
         {results.clarity !== undefined && (
           <div className="analysis-card">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold">Nadiifnimo</h3>
+              <h3 className="text-lg font-semibold">Clarity [Nadiifnimo]</h3>
               <Sparkles className="w-5 h-5 text-primary" />
             </div>
             <div className="relative h-4 bg-secondary rounded-full overflow-hidden">
@@ -55,7 +55,7 @@ export const AnalysisResult: React.FC<AnalysisResultProps> = ({ results }) => {
         {results.texture !== undefined && (
           <div className="analysis-card">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold">Dhadhanka</h3>
+              <h3 className="text-lg font-semibold">Texture [Dhadhanka]</h3>
               <Shield className="w-5 h-5 text-primary" />
             </div>
             <div className="relative h-4 bg-secondary rounded-full overflow-hidden">
@@ -75,7 +75,7 @@ export const AnalysisResult: React.FC<AnalysisResultProps> = ({ results }) => {
         {results.acne !== undefined && (
           <div className="analysis-card">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold">Finfinow</h3>
+              <h3 className="text-lg font-semibold">Acne [Finfinow]</h3>
               <AlertCircle className="w-5 h-5 text-primary" />
             </div>
             <div className="relative h-4 bg-secondary rounded-full overflow-hidden">
@@ -93,8 +93,8 @@ export const AnalysisResult: React.FC<AnalysisResultProps> = ({ results }) => {
         {results.wrinkles !== undefined && (
           <div className="analysis-card">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold">Jiiqid</h3>
-              <Frown className="w-5 h-5 text-primary" />
+              <h3 className="text-lg font-semibold">Wrinkles [Jiiqid]</h3>
+              <Waves className="w-5 h-5 text-primary" />
             </div>
             <div className="relative h-4 bg-secondary rounded-full overflow-hidden">
               <div
@@ -111,7 +111,7 @@ export const AnalysisResult: React.FC<AnalysisResultProps> = ({ results }) => {
         {results.darkCircles !== undefined && (
           <div className="analysis-card">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold">Gariir Madow</h3>
+              <h3 className="text-lg font-semibold">Dark Circles [Gariir Madow]</h3>
               <AlertCircle className="w-5 h-5 text-primary" />
             </div>
             <div className="relative h-4 bg-secondary rounded-full overflow-hidden">
