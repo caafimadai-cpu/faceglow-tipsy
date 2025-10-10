@@ -40,11 +40,8 @@ serve(async (req) => {
     let paymentSuccess = false;
     let paymentMessage = '';
 
-    // TEMPORARY: Force test mode until Hormuud credentials are verified
-    const USE_TEST_MODE = true;
-    
-    // If credentials are configured and test mode is off, try real payment
-    if (!USE_TEST_MODE && hormuudApiKey && hormuudMerchantId && hormuudMerchantUserIdStr) {
+    // If credentials are configured, try real payment
+    if (hormuudApiKey && hormuudMerchantId && hormuudMerchantUserIdStr) {
       console.log('Using real Hormuud API');
       
       // Convert user ID to number - remove any quotes or whitespace
