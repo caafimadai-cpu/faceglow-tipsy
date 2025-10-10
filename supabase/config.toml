@@ -4,4 +4,4 @@ project_id = "ysusifjjxpwgwfcvfhzb"
 verify_jwt = false
 
 [functions.hormuud-payment]
-verify_jwt = true
+verify_jwt = false
