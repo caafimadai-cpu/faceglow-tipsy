@@ -2,11 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { ImageUpload } from '@/components/ImageUpload';
 import { AnalysisResult } from '@/components/AnalysisResult';
 import { useToast } from '@/components/ui/use-toast';
-import { Loader2, Users, LogOut } from 'lucide-react';
+import { Loader2, Users, LogOut, Globe } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { User, Session } from '@supabase/supabase-js';
+import { useTranslation } from 'react-i18next';
 
 // Real AI analysis using RapidAPI
 const analyzeImage = async (file: File) => {
@@ -58,6 +59,7 @@ const Index = () => {
   const [session, setSession] = useState<Session | null>(null);
   const { toast } = useToast();
   const navigate = useNavigate();
+  const { t, i18n } = useTranslation();
 
   useEffect(() => {
     // Set up auth state listener
@@ -82,8 +84,8 @@ const Index = () => {
       setAnalysisResults(results);
     } catch (error) {
       toast({
-        title: "Falanqayntu Waa Fashilantay",
-        description: "Waxaa jirtay khalad la falanqaynaya sawirkaaga. Fadlan mar kale isku day.",
+        title: t('analysisFailed'),
+        description: t('analysisFailedDesc'),
         variant: "destructive"
       });
     } finally {
@@ -94,57 +96,62 @@ const Index = () => {
   const handleSignOut = async () => {
     await supabase.auth.signOut();
     toast({
-      title: 'Guul',
-      description: 'Waad ka baxday',
+      title: t('success'),
+      description: t('signedOut'),
     });
   };
 
+  const toggleLanguage = () => {
+    const languages = ['en', 'ar', 'so'];
+    const currentIndex = languages.indexOf(i18n.language);
+    const nextIndex = (currentIndex + 1) % languages.length;
+    i18n.changeLanguage(languages[nextIndex]);
+  };
+
   return (
-    <div className="min-h-screen py-12 px-4 sm:px-6 lg:px-8 space-y-12">
+    <div className="min-h-screen py-12 px-4 sm:px-6 lg:px-8 space-y-12" dir={i18n.language === 'ar' ? 'rtl' : 'ltr'}>
       <div className="flex justify-between items-center mb-4">
-        {user ? (
-          <>
+        <div className="flex gap-2">
+          {user ? (
             <Button 
               onClick={handleSignOut}
               variant="outline"
               className="gap-2"
             >
               <LogOut className="w-4 h-4" />
-              Ka Bax
+              {t('signOut')}
             </Button>
-            <Button 
-              onClick={() => navigate('/community')}
-              variant="outline"
-              className="gap-2"
-            >
-              <Users className="w-4 h-4" />
-              Bulshada
-            </Button>
-          </>
-        ) : (
-          <>
+          ) : (
             <Button 
               onClick={() => navigate('/auth')}
               variant="outline"
             >
-              Gal
+              {t('signIn')}
             </Button>
-            <Button 
-              onClick={() => navigate('/community')}
-              variant="outline"
-              className="gap-2"
-            >
-              <Users className="w-4 h-4" />
-              Bulshada
-            </Button>
-          </>
-        )}
+          )}
+          <Button 
+            onClick={toggleLanguage}
+            variant="outline"
+            size="icon"
+            title="Change Language"
+          >
+            <Globe className="w-4 h-4" />
+          </Button>
+        </div>
+        <Button 
+          onClick={() => navigate('/community')}
+          variant="outline"
+          className="gap-2"
+        >
+          <Users className="w-4 h-4" />
+          {t('community')}
+        </Button>
       </div>
       
       <div className="text-center space-y-4">
-        <h1 className="text-4xl font-bold tracking-tight">Falanqaynta Wejiga</h1>
+        <h1 className="text-4xl font-bold tracking-tight">{t('pageTitle')}</h1>
         <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-          Soo rar sawirkaaga si aad u hesho falanqayn faahfaahsan oo ku saabsan caafimaadka maqaarkaaga iyo talooyinka gaarka ah
+          {t('pageDescription')}
         </p>
       </div>
 
@@ -153,7 +160,7 @@ const Index = () => {
       {isAnalyzing && (
         <div className="flex flex-col items-center gap-4 animate-fadeIn">
           <Loader2 className="w-8 h-8 animate-spin text-primary" />
-          <p className="text-sm text-muted-foreground">Sawirkaaga waan ku falanqaynaynaa...</p>
+          <p className="text-sm text-muted-foreground">{t('analyzing')}</p>
         </div>
       )}
 

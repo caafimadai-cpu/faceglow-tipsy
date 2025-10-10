@@ -1,5 +1,6 @@
 import React from 'react';
 import { Droplet, Sun, Shield, Sparkles, AlertCircle, Waves } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 interface AnalysisResultProps {
   results: {
@@ -15,12 +16,14 @@ interface AnalysisResultProps {
 }
 
 export const AnalysisResult: React.FC<AnalysisResultProps> = ({ results }) => {
+  const { t } = useTranslation();
+  
   return (
     <div className="w-full max-w-4xl mx-auto space-y-8 animate-fadeIn">
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div className="analysis-card">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-semibold">Hydration [Qoyaan]</h3>
+            <h3 className="text-lg font-semibold">{t('hydration')}</h3>
             <Droplet className="w-5 h-5 text-primary" />
           </div>
           <div className="relative h-4 bg-secondary rounded-full overflow-hidden">
@@ -37,7 +40,7 @@ export const AnalysisResult: React.FC<AnalysisResultProps> = ({ results }) => {
         {results.clarity !== undefined && (
           <div className="analysis-card">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold">Clarity [Nadiifnimo]</h3>
+              <h3 className="text-lg font-semibold">{t('clarity')}</h3>
               <Sparkles className="w-5 h-5 text-primary" />
             </div>
             <div className="relative h-4 bg-secondary rounded-full overflow-hidden">
@@ -55,7 +58,7 @@ export const AnalysisResult: React.FC<AnalysisResultProps> = ({ results }) => {
         {results.texture !== undefined && (
           <div className="analysis-card">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold">Texture [Dhadhanka]</h3>
+              <h3 className="text-lg font-semibold">{t('texture')}</h3>
               <Shield className="w-5 h-5 text-primary" />
             </div>
             <div className="relative h-4 bg-secondary rounded-full overflow-hidden">
@@ -75,7 +78,7 @@ export const AnalysisResult: React.FC<AnalysisResultProps> = ({ results }) => {
         {results.acne !== undefined && (
           <div className="analysis-card">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold">Acne [Finfinow]</h3>
+              <h3 className="text-lg font-semibold">{t('acne')}</h3>
               <AlertCircle className="w-5 h-5 text-primary" />
             </div>
             <div className="relative h-4 bg-secondary rounded-full overflow-hidden">
@@ -85,7 +88,7 @@ export const AnalysisResult: React.FC<AnalysisResultProps> = ({ results }) => {
               />
             </div>
             <p className="mt-2 text-sm text-muted-foreground">
-              {results.acne}% (Sare = Wanaagsan)
+              {results.acne}% ({t('higherIsBetter')})
             </p>
           </div>
         )}
@@ -93,7 +96,7 @@ export const AnalysisResult: React.FC<AnalysisResultProps> = ({ results }) => {
         {results.wrinkles !== undefined && (
           <div className="analysis-card">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold">Wrinkles [Jiiqid]</h3>
+              <h3 className="text-lg font-semibold">{t('wrinkles')}</h3>
               <Waves className="w-5 h-5 text-primary" />
             </div>
             <div className="relative h-4 bg-secondary rounded-full overflow-hidden">
@@ -103,7 +106,7 @@ export const AnalysisResult: React.FC<AnalysisResultProps> = ({ results }) => {
               />
             </div>
             <p className="mt-2 text-sm text-muted-foreground">
-              {results.wrinkles}% (Sare = Wanaagsan)
+              {results.wrinkles}% ({t('higherIsBetter')})
             </p>
           </div>
         )}
@@ -111,7 +114,7 @@ export const AnalysisResult: React.FC<AnalysisResultProps> = ({ results }) => {
         {results.darkCircles !== undefined && (
           <div className="analysis-card">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold">Dark Circles [Gariir Madow]</h3>
+              <h3 className="text-lg font-semibold">{t('darkCircles')}</h3>
               <AlertCircle className="w-5 h-5 text-primary" />
             </div>
             <div className="relative h-4 bg-secondary rounded-full overflow-hidden">
@@ -121,7 +124,7 @@ export const AnalysisResult: React.FC<AnalysisResultProps> = ({ results }) => {
               />
             </div>
             <p className="mt-2 text-sm text-muted-foreground">
-              {results.darkCircles}% (Sare = Wanaagsan)
+              {results.darkCircles}% ({t('higherIsBetter')})
             </p>
           </div>
         )}
@@ -131,7 +134,7 @@ export const AnalysisResult: React.FC<AnalysisResultProps> = ({ results }) => {
         <div className="analysis-card">
           <div className="flex items-center gap-2 mb-4">
             <Shield className="w-5 h-5 text-primary" />
-            <h3 className="text-lg font-semibold">Walaacyo Maqaarka</h3>
+            <h3 className="text-lg font-semibold">{t('skinConcerns')}</h3>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {results.concerns.map((concern, index) => (
@@ -149,7 +152,7 @@ export const AnalysisResult: React.FC<AnalysisResultProps> = ({ results }) => {
       <div className="analysis-card">
         <div className="flex items-center gap-2 mb-4">
           <Sun className="w-5 h-5 text-primary" />
-          <h3 className="text-lg font-semibold">Talooyinka</h3>
+          <h3 className="text-lg font-semibold">{t('recommendations')}</h3>
         </div>
         <div className="space-y-4">
           {results.recommendations.map((recommendation, index) => (
