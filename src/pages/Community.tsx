@@ -2,6 +2,9 @@ import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Users, CheckCircle, ArrowLeft, LogOut } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useNavigate } from 'react-router-dom';
@@ -20,6 +23,9 @@ const Community = () => {
   const [joiningId, setJoiningId] = useState<string | null>(null);
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
+  const [showPaymentDialog, setShowPaymentDialog] = useState(false);
+  const [selectedCommunity, setSelectedCommunity] = useState<string | null>(null);
+  const [phoneNumber, setPhoneNumber] = useState('');
   const { toast } = useToast();
   const navigate = useNavigate();
 
@@ -73,16 +79,32 @@ const Community = () => {
       return;
     }
 
-    setJoiningId(communityId);
+    setSelectedCommunity(communityId);
+    setShowPaymentDialog(true);
+  };
+
+  const handlePayment = async () => {
+    if (!phoneNumber) {
+      toast({
+        title: 'Khalad',
+        description: 'Fadlan geli lambarkaa telefoonka',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    if (!selectedCommunity || !user) return;
+
+    setJoiningId(selectedCommunity);
     
     try {
-
       // Call Hormuud payment API
       const { data, error } = await supabase.functions.invoke('hormuud-payment', {
         body: {
-          communityId,
+          communityId: selectedCommunity,
           userId: user.id,
-          amount: 5, // $5 membership fee
+          amount: 5,
+          phoneNumber: phoneNumber,
         },
       });
 
@@ -93,12 +115,14 @@ const Community = () => {
         description: 'Waad ku guuleysatay inaad ku biirto bulshada. Lacagta waa la diray.',
       });
 
+      setShowPaymentDialog(false);
+      setPhoneNumber('');
       fetchCommunities();
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error joining community:', error);
       toast({
         title: 'Khalad',
-        description: 'Wax khalad ah ayaa dhacay marka la bixinayo. Fadlan mar kale isku day.',
+        description: error.message || 'Wax khalad ah ayaa dhacay marka la bixinayo. Fadlan mar kale isku day.',
         variant: 'destructive',
       });
     } finally {
@@ -210,6 +234,54 @@ const Community = () => {
             </Card>
           ))}
         </div>
+
+        <Dialog open={showPaymentDialog} onOpenChange={setShowPaymentDialog}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Bixin EVC Plus</DialogTitle>
+              <DialogDescription>
+                Fadlan geli lambarkaa telefoonka EVC Plus si aad u bixiso $5 lacagta ku-biiritaanka
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-4 py-4">
+              <div className="space-y-2">
+                <Label htmlFor="phone">Lambarka Telefoonka</Label>
+                <Input
+                  id="phone"
+                  placeholder="252xxxxxxxx"
+                  value={phoneNumber}
+                  onChange={(e) => setPhoneNumber(e.target.value)}
+                  disabled={!!joiningId}
+                />
+                <p className="text-sm text-muted-foreground">
+                  Geli lambarka telefoonka EVC Plus (tusaale: 252615123456)
+                </p>
+              </div>
+            </div>
+            <DialogFooter>
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setShowPaymentDialog(false);
+                  setPhoneNumber('');
+                }}
+                disabled={!!joiningId}
+              >
+                Ka Noqo
+              </Button>
+              <Button onClick={handlePayment} disabled={!!joiningId}>
+                {joiningId ? (
+                  <>
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-background mr-2"></div>
+                    Bixin...
+                  </>
+                ) : (
+                  'Bixi $5'
+                )}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </div>
     </div>
   );

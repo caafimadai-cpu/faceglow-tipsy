@@ -12,9 +12,9 @@ serve(async (req) => {
   }
 
   try {
-    const { communityId, userId, amount } = await req.json();
+    const { communityId, userId, amount, phoneNumber } = await req.json();
 
-    console.log('Processing Hormuud EVC payment:', { communityId, userId, amount });
+    console.log('Processing Hormuud EVC payment:', { communityId, userId, amount, phoneNumber });
 
     // Initialize Supabase client
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
@@ -23,18 +23,23 @@ serve(async (req) => {
 
     // Get Hormuud API credentials
     const hormuudApiKey = Deno.env.get('HORMUUD_API_KEY');
-    const hormuudMerchantId = Deno.env.get('HORMUUD_MERCHANT_ID') || 'merchant_id';
+    const hormuudMerchantId = Deno.env.get('HORMUUD_MERCHANT_ID');
+    const hormuudMerchantUserId = Deno.env.get('HORMUUD_MERCHANT_USER_ID');
     
-    if (!hormuudApiKey) {
-      console.error('Hormuud API key not configured');
-      throw new Error('Hormuud API key not configured');
+    if (!hormuudApiKey || !hormuudMerchantId || !hormuudMerchantUserId) {
+      console.error('Hormuud credentials not fully configured');
+      throw new Error('Payment gateway not properly configured. Please contact support.');
+    }
+
+    // Validate phone number
+    if (!phoneNumber) {
+      throw new Error('Phone number is required for payment');
     }
 
     // Generate unique transaction reference
     const transactionRef = `COMM_${Date.now()}_${userId.substring(0, 8)}`;
     
     // Hormuud EVC Plus API - Payment Request
-    // Using standard Hormuud EVC Plus API endpoint
     const hormuudPayload = {
       schemaVersion: '1.0',
       requestId: transactionRef,
@@ -43,11 +48,11 @@ serve(async (req) => {
       serviceName: 'API_PURCHASE',
       serviceParams: {
         merchantUid: hormuudMerchantId,
-        apiUserId: hormuudApiKey,
+        apiUserId: parseInt(hormuudMerchantUserId), // Must be integer
         apiKey: hormuudApiKey,
         paymentMethod: 'MWALLET_ACCOUNT',
         payerInfo: {
-          accountNo: 'CUSTOMER_PHONE' // This should be collected from user
+          accountNo: phoneNumber
         },
         transactionInfo: {
           referenceId: transactionRef,
@@ -82,8 +87,8 @@ serve(async (req) => {
       throw new Error('Invalid response from payment gateway');
     }
 
-    // Check payment status
-    if (!hormuudResponse.ok || paymentData.responseCode !== '2001') {
+    // Check payment status (2001 = success)
+    if (paymentData.responseCode !== '2001') {
       console.error('Hormuud API error:', paymentData);
       throw new Error(paymentData.responseMsg || 'Payment processing failed');
     }
