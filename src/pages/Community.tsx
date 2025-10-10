@@ -2,8 +2,10 @@ import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Users, CheckCircle } from 'lucide-react';
+import { Users, CheckCircle, ArrowLeft, LogOut } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { useNavigate } from 'react-router-dom';
+import { User, Session } from '@supabase/supabase-js';
 
 interface Community {
   id: string;
@@ -16,10 +18,27 @@ const Community = () => {
   const [communities, setCommunities] = useState<Community[]>([]);
   const [loading, setLoading] = useState(true);
   const [joiningId, setJoiningId] = useState<string | null>(null);
+  const [user, setUser] = useState<User | null>(null);
+  const [session, setSession] = useState<Session | null>(null);
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   useEffect(() => {
+    // Set up auth state listener
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      setSession(session);
+      setUser(session?.user ?? null);
+    });
+
+    // Check for existing session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+      setUser(session?.user ?? null);
+    });
+
     fetchCommunities();
+
+    return () => subscription.unsubscribe();
   }, []);
 
   const fetchCommunities = async () => {
@@ -44,19 +63,19 @@ const Community = () => {
   };
 
   const handleJoinCommunity = async (communityId: string) => {
+    if (!user) {
+      toast({
+        title: 'Gal ama Diwaangeli',
+        description: 'Waa inaad gashaa si aad ugu biirto bulshada',
+        variant: 'destructive',
+      });
+      navigate('/auth');
+      return;
+    }
+
     setJoiningId(communityId);
     
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      
-      if (!user) {
-        toast({
-          title: 'Gal ama Diwaangeli',
-          description: 'Waa inaad gashaa si aad ugu biirto bulshada',
-          variant: 'destructive',
-        });
-        return;
-      }
 
       // Call Hormuud payment API
       const { data, error } = await supabase.functions.invoke('hormuud-payment', {
@@ -87,6 +106,14 @@ const Community = () => {
     }
   };
 
+  const handleSignOut = async () => {
+    await supabase.auth.signOut();
+    toast({
+      title: 'Guul',
+      description: 'Waad ka baxday',
+    });
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5 flex items-center justify-center">
@@ -101,6 +128,28 @@ const Community = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5">
       <div className="container mx-auto px-4 py-12">
+        <div className="flex justify-between items-center mb-8">
+          <Button 
+            onClick={() => navigate('/')}
+            variant="outline"
+            className="gap-2"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            Dib u Noqo
+          </Button>
+          
+          {user && (
+            <Button 
+              onClick={handleSignOut}
+              variant="outline"
+              className="gap-2"
+            >
+              <LogOut className="w-4 h-4" />
+              Ka Bax
+            </Button>
+          )}
+        </div>
+
         <div className="text-center mb-12">
           <h1 className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-primary via-primary/80 to-primary/60 bg-clip-text text-transparent">
             Bulshada Daryeelka Maqaarka

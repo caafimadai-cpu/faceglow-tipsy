@@ -1,10 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ImageUpload } from '@/components/ImageUpload';
 import { AnalysisResult } from '@/components/AnalysisResult';
 import { useToast } from '@/components/ui/use-toast';
-import { Loader2, Users } from 'lucide-react';
+import { Loader2, Users, LogIn, LogOut } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
+import { supabase } from '@/integrations/supabase/client';
+import { User, Session } from '@supabase/supabase-js';
 
 // Real AI analysis using RapidAPI
 const analyzeImage = async (file: File) => {
@@ -52,8 +54,34 @@ const analyzeImage = async (file: File) => {
 const Index = () => {
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [analysisResults, setAnalysisResults] = useState<any>(null);
+  const [user, setUser] = useState<User | null>(null);
+  const [session, setSession] = useState<Session | null>(null);
   const { toast } = useToast();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    // Set up auth state listener
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      setSession(session);
+      setUser(session?.user ?? null);
+    });
+
+    // Check for existing session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+      setUser(session?.user ?? null);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
+  const handleSignOut = async () => {
+    await supabase.auth.signOut();
+    toast({
+      title: 'Guul',
+      description: 'Waad ka baxday',
+    });
+  };
 
   const handleImageSelect = async (file: File) => {
     try {
@@ -73,7 +101,7 @@ const Index = () => {
 
   return (
     <div className="min-h-screen py-12 px-4 sm:px-6 lg:px-8 space-y-12">
-      <div className="flex justify-end mb-4">
+      <div className="flex justify-end gap-2 mb-4">
         <Button 
           onClick={() => navigate('/community')}
           variant="outline"
@@ -82,6 +110,26 @@ const Index = () => {
           <Users className="w-4 h-4" />
           Bulshada
         </Button>
+        
+        {user ? (
+          <Button 
+            onClick={handleSignOut}
+            variant="outline"
+            className="gap-2"
+          >
+            <LogOut className="w-4 h-4" />
+            Ka Bax
+          </Button>
+        ) : (
+          <Button 
+            onClick={() => navigate('/auth')}
+            variant="default"
+            className="gap-2"
+          >
+            <LogIn className="w-4 h-4" />
+            Gal
+          </Button>
+        )}
       </div>
       
       <div className="text-center space-y-4">
