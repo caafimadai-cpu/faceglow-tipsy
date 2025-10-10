@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { ImageUpload } from '@/components/ImageUpload';
 import { AnalysisResult } from '@/components/AnalysisResult';
 import { useToast } from '@/components/ui/use-toast';
-import { Loader2, Users, LogIn, LogOut } from 'lucide-react';
+import { Loader2, Users, LogOut } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
@@ -75,14 +75,6 @@ const Index = () => {
     return () => subscription.unsubscribe();
   }, []);
 
-  const handleSignOut = async () => {
-    await supabase.auth.signOut();
-    toast({
-      title: 'Guul',
-      description: 'Waad ka baxday',
-    });
-  };
-
   const handleImageSelect = async (file: File) => {
     try {
       setIsAnalyzing(true);
@@ -99,36 +91,53 @@ const Index = () => {
     }
   };
 
+  const handleSignOut = async () => {
+    await supabase.auth.signOut();
+    toast({
+      title: 'Guul',
+      description: 'Waad ka baxday',
+    });
+  };
+
   return (
     <div className="min-h-screen py-12 px-4 sm:px-6 lg:px-8 space-y-12">
-      <div className="flex justify-end gap-2 mb-4">
-        <Button 
-          onClick={() => navigate('/community')}
-          variant="outline"
-          className="gap-2"
-        >
-          <Users className="w-4 h-4" />
-          Bulshada
-        </Button>
-        
+      <div className="flex justify-between items-center mb-4">
         {user ? (
-          <Button 
-            onClick={handleSignOut}
-            variant="outline"
-            className="gap-2"
-          >
-            <LogOut className="w-4 h-4" />
-            Ka Bax
-          </Button>
+          <>
+            <Button 
+              onClick={handleSignOut}
+              variant="outline"
+              className="gap-2"
+            >
+              <LogOut className="w-4 h-4" />
+              Ka Bax
+            </Button>
+            <Button 
+              onClick={() => navigate('/community')}
+              variant="outline"
+              className="gap-2"
+            >
+              <Users className="w-4 h-4" />
+              Bulshada
+            </Button>
+          </>
         ) : (
-          <Button 
-            onClick={() => navigate('/auth')}
-            variant="default"
-            className="gap-2"
-          >
-            <LogIn className="w-4 h-4" />
-            Gal
-          </Button>
+          <>
+            <Button 
+              onClick={() => navigate('/auth')}
+              variant="outline"
+            >
+              Gal
+            </Button>
+            <Button 
+              onClick={() => navigate('/community')}
+              variant="outline"
+              className="gap-2"
+            >
+              <Users className="w-4 h-4" />
+              Bulshada
+            </Button>
+          </>
         )}
       </div>
       
