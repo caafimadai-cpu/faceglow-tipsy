@@ -2,7 +2,9 @@ import React, { useState } from 'react';
 import { ImageUpload } from '@/components/ImageUpload';
 import { AnalysisResult } from '@/components/AnalysisResult';
 import { useToast } from '@/components/ui/use-toast';
-import { Loader2 } from 'lucide-react';
+import { Loader2, Users } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { useNavigate } from 'react-router-dom';
 
 // Real AI analysis using RapidAPI
 const analyzeImage = async (file: File) => {
@@ -51,6 +53,7 @@ const Index = () => {
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [analysisResults, setAnalysisResults] = useState<any>(null);
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   const handleImageSelect = async (file: File) => {
     try {
@@ -70,6 +73,17 @@ const Index = () => {
 
   return (
     <div className="min-h-screen py-12 px-4 sm:px-6 lg:px-8 space-y-12">
+      <div className="flex justify-end mb-4">
+        <Button 
+          onClick={() => navigate('/community')}
+          variant="outline"
+          className="gap-2"
+        >
+          <Users className="w-4 h-4" />
+          Bulshada
+        </Button>
+      </div>
+      
       <div className="text-center space-y-4">
         <h1 className="text-4xl font-bold tracking-tight">Falanqaynta Wejiga</h1>
         <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
