@@ -32,14 +32,24 @@ serve(async (req) => {
     // Get Hormuud API credentials (optional for testing)
     const hormuudApiKey = Deno.env.get('HORMUUD_API_KEY');
     const hormuudMerchantId = Deno.env.get('HORMUUD_MERCHANT_ID');
-    const hormuudMerchantUserId = Deno.env.get('HORMUUD_MERCHANT_USER_ID');
+    const hormuudMerchantUserIdStr = Deno.env.get('HORMUUD_MERCHANT_USER_ID');
     
     let paymentSuccess = false;
     let paymentMessage = '';
 
     // If credentials are configured, try real payment
-    if (hormuudApiKey && hormuudMerchantId && hormuudMerchantUserId) {
+    if (hormuudApiKey && hormuudMerchantId && hormuudMerchantUserIdStr) {
       console.log('Using real Hormuud API');
+      
+      // Convert user ID to number - remove any quotes or whitespace
+      const cleanUserId = hormuudMerchantUserIdStr.replace(/['"]/g, '').trim();
+      const hormuudMerchantUserId = Number(cleanUserId);
+      
+      console.log('Merchant User ID (converted):', hormuudMerchantUserId, 'Type:', typeof hormuudMerchantUserId);
+      
+      if (isNaN(hormuudMerchantUserId)) {
+        throw new Error('Invalid merchant user ID format');
+      }
       
       const hormuudPayload = {
         schemaVersion: '1.0',
@@ -49,7 +59,7 @@ serve(async (req) => {
         serviceName: 'API_PURCHASE',
         serviceParams: {
           merchantUid: hormuudMerchantId,
-          apiUserId: parseInt(hormuudMerchantUserId),
+          apiUserId: hormuudMerchantUserId, // Now a proper number
           apiKey: hormuudApiKey,
           paymentMethod: 'MWALLET_ACCOUNT',
           payerInfo: {
@@ -64,6 +74,8 @@ serve(async (req) => {
           }
         }
       };
+
+      console.log('Sending Hormuud payload (apiUserId type):', typeof hormuudPayload.serviceParams.apiUserId);
 
       try {
         const hormuudResponse = await fetch('https://api.waafipay.net/asm', {
