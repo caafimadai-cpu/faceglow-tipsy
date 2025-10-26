@@ -68,7 +68,7 @@ serve(async (req) => {
         serviceName: 'API_PURCHASE',
         serviceParams: {
           merchantUid: hormuudMerchantId,
-          apiUserId: hormuudMerchantUserId, // Now a proper number
+          apiUserId: String(hormuudMerchantUserId),
           apiKey: hormuudApiKey,
           paymentMethod: 'MWALLET_ACCOUNT',
           payerInfo: {
@@ -77,7 +77,7 @@ serve(async (req) => {
           transactionInfo: {
             referenceId: transactionRef,
             invoiceId: communityId,
-            amount: amount,
+            amount: String(amount),
             currency: 'USD',
             description: 'Community Membership Fee'
           }
