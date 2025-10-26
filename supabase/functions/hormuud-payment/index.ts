@@ -44,22 +44,6 @@ serve(async (req) => {
     if (hormuudApiKey && hormuudMerchantId && hormuudMerchantUserIdStr) {
       console.log('Using real Hormuud API');
       
-      // Convert user ID to number - remove any quotes or whitespace
-      const cleanUserId = hormuudMerchantUserIdStr.replace(/['"]/g, '').trim();
-      const hormuudMerchantUserId = Number(cleanUserId);
-      
-      console.log('Cleaned value:', cleanUserId);
-      console.log('Merchant User ID (converted):', hormuudMerchantUserId, 'Type:', typeof hormuudMerchantUserId);
-      
-      if (isNaN(hormuudMerchantUserId)) {
-        console.error('FAILED TO CONVERT TO NUMBER - Using test mode instead');
-        // Fall back to test mode instead of failing
-        console.log('TEST MODE: Simulating successful payment (credentials invalid)');
-        paymentSuccess = true;
-        paymentMessage = 'TEST MODE: Payment simulated (invalid credentials)';
-        await new Promise(resolve => setTimeout(resolve, 1000));
-      } else {
-      
       const hormuudPayload = {
         schemaVersion: '1.0',
         requestId: transactionRef,
@@ -68,7 +52,7 @@ serve(async (req) => {
         serviceName: 'API_PURCHASE',
         serviceParams: {
           merchantUid: hormuudMerchantId,
-          apiUserId: String(hormuudMerchantUserId),
+          apiUserId: hormuudMerchantUserIdStr,
           apiKey: hormuudApiKey,
           paymentMethod: 'MWALLET_ACCOUNT',
           payerInfo: {
@@ -84,8 +68,7 @@ serve(async (req) => {
         }
       };
 
-
-      console.log('Sending Hormuud payload (apiUserId type):', typeof hormuudPayload.serviceParams.apiUserId);
+      console.log('Sending Hormuud payload:', JSON.stringify(hormuudPayload, null, 2));
 
       try {
         const hormuudResponse = await fetch('https://api.waafipay.net/asm', {
@@ -108,7 +91,6 @@ serve(async (req) => {
       } catch (error) {
         console.error('Hormuud payment error:', error);
         throw error;
-      }
       }
     } else {
       // Test mode - simulate successful payment
