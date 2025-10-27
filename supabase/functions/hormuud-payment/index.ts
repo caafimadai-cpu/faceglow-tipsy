@@ -27,79 +27,61 @@ serve(async (req) => {
     }
 
     // Generate unique transaction reference
-    const transactionRef = `COMM_${Date.now()}_${userId.substring(0, 8)}`;
-    
-    // Get Hormuud API credentials (optional for testing)
-    const hormuudApiKey = Deno.env.get('HORMUUD_API_KEY')?.trim();
-    const hormuudMerchantId = Deno.env.get('HORMUUD_MERCHANT_ID')?.trim();
-    const hormuudMerchantUserIdStr = Deno.env.get('HORMUUD_MERCHANT_USER_ID')?.trim();
-    
-    console.log('Trimmed apiUserId:', hormuudMerchantUserIdStr);
-    console.log('apiUserId length:', hormuudMerchantUserIdStr?.length);
+    const transactionRef = `RFX${Date.now()}`;
     
     let paymentSuccess = false;
     let paymentMessage = '';
 
-    // If credentials are configured, try real payment
-    if (hormuudApiKey && hormuudMerchantId && hormuudMerchantUserIdStr) {
-      console.log('Using real Hormuud API');
-      
-      const hormuudPayload = {
-        schemaVersion: '1.0',
-        requestId: transactionRef,
-        timestamp: new Date().toISOString(),
-        channelName: 'WEB',
-        serviceName: 'API_PURCHASE',
-        serviceParams: {
-          merchantUid: hormuudMerchantId,
-          apiUserId: hormuudMerchantUserIdStr,
-          apiKey: `API-${hormuudApiKey}`,
-          paymentMethod: 'MWALLET_ACCOUNT',
-          payerInfo: {
-            accountNo: phoneNumber
-          },
-          transactionInfo: {
-            referenceId: transactionRef,
-            invoiceId: communityId,
-            amount: String(amount),
-            currency: 'USD',
-            description: 'test direct purchase'
-          }
+    // Use exact values from your example
+    console.log('Using hardcoded Hormuud API values for testing');
+    
+    const hormuudPayload = {
+      schemaVersion: "1.0",
+      requestId: transactionRef,
+      timestamp: new Date().toISOString(),
+      channelName: "WEB",
+      serviceName: "API_PURCHASE",
+      serviceParams: {
+        merchantUid: "M0913768",
+        apiUserId: "1007765",
+        apiKey: "API-994409942AHX",
+        paymentMethod: "MWALLET_ACCOUNT",
+        payerInfo: {
+          accountNo: phoneNumber
+        },
+        transactionInfo: {
+          referenceId: transactionRef,
+          invoiceId: communityId,
+          amount: "0.1",
+          currency: "USD",
+          description: "test direct purchase"
         }
-      };
-
-      console.log('Sending Hormuud payload:', JSON.stringify(hormuudPayload, null, 2));
-
-      try {
-        const hormuudResponse = await fetch('https://api.waafipay.net/asm', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(hormuudPayload),
-        });
-
-        const paymentData = await hormuudResponse.json();
-        console.log('Hormuud response:', paymentData);
-
-        if (paymentData.responseCode === '2001') {
-          paymentSuccess = true;
-          paymentMessage = 'Payment processed successfully via Hormuud';
-        } else {
-          throw new Error(paymentData.responseMsg || 'Payment failed');
-        }
-      } catch (error) {
-        console.error('Hormuud payment error:', error);
-        throw error;
       }
-    } else {
-      // Test mode - simulate successful payment
-      console.log('TEST MODE: Simulating successful payment');
-      paymentSuccess = true;
-      paymentMessage = 'TEST MODE: Payment simulated successfully';
-      
-      // Add a small delay to simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
+    };
+
+    console.log('Sending Hormuud payload:', JSON.stringify(hormuudPayload, null, 2));
+
+    try {
+      const hormuudResponse = await fetch('https://api.waafipay.net/asm', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(hormuudPayload),
+      });
+
+      const paymentData = await hormuudResponse.json();
+      console.log('Hormuud response:', paymentData);
+
+      if (paymentData.responseCode === '2001') {
+        paymentSuccess = true;
+        paymentMessage = 'Payment processed successfully via Hormuud';
+      } else {
+        throw new Error(paymentData.responseMsg || 'Payment failed');
+      }
+    } catch (error) {
+      console.error('Hormuud payment error:', error);
+      throw error;
     }
 
     if (paymentSuccess) {
