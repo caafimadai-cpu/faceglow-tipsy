@@ -53,7 +53,7 @@ serve(async (req) => {
         serviceParams: {
           merchantUid: hormuudMerchantId,
           apiUserId: hormuudMerchantUserIdStr,
-          apiKey: hormuudApiKey,
+          apiKey: `API-${hormuudApiKey}`,
           paymentMethod: 'MWALLET_ACCOUNT',
           payerInfo: {
             accountNo: phoneNumber
@@ -63,7 +63,7 @@ serve(async (req) => {
             invoiceId: communityId,
             amount: String(amount),
             currency: 'USD',
-            description: 'Community Membership Fee'
+            description: 'test direct purchase'
           }
         }
       };
