@@ -8,6 +8,16 @@ import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { User, Session } from '@supabase/supabase-js';
 import { useTranslation } from 'react-i18next';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 // Real AI analysis using RapidAPI
 const analyzeImage = async (file: File) => {
@@ -57,6 +67,11 @@ const Index = () => {
   const [analysisResults, setAnalysisResults] = useState<any>(null);
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
+  const [uploadCount, setUploadCount] = useState(0);
+  const [hasPaid, setHasPaid] = useState(false);
+  const [showPaymentDialog, setShowPaymentDialog] = useState(false);
+  const [phoneNumber, setPhoneNumber] = useState('');
+  const [isProcessingPayment, setIsProcessingPayment] = useState(false);
   const { toast } = useToast();
   const navigate = useNavigate();
   const { t, i18n } = useTranslation();
@@ -77,11 +92,86 @@ const Index = () => {
     return () => subscription.unsubscribe();
   }, []);
 
+  // Fetch user credits
+  useEffect(() => {
+    if (user) {
+      fetchUserCredits();
+    }
+  }, [user]);
+
+  const fetchUserCredits = async () => {
+    if (!user) return;
+
+    const { data, error } = await supabase
+      .from('user_credits')
+      .select('*')
+      .eq('user_id', user.id)
+      .maybeSingle();
+
+    if (error) {
+      console.error('Error fetching credits:', error);
+      return;
+    }
+
+    if (!data) {
+      // Create initial credits record
+      await supabase.from('user_credits').insert({
+        user_id: user.id,
+        upload_count: 0,
+        has_paid: false,
+      });
+      setUploadCount(0);
+      setHasPaid(false);
+    } else {
+      // Check if 24 hours have passed since last reset
+      const lastReset = new Date(data.last_reset_at);
+      const now = new Date();
+      const hoursSinceReset = (now.getTime() - lastReset.getTime()) / (1000 * 60 * 60);
+
+      if (hoursSinceReset >= 24 && !data.has_paid) {
+        // Reset upload count
+        await supabase
+          .from('user_credits')
+          .update({ upload_count: 0, last_reset_at: now.toISOString() })
+          .eq('user_id', user.id);
+        setUploadCount(0);
+      } else {
+        setUploadCount(data.upload_count);
+      }
+      setHasPaid(data.has_paid);
+    }
+  };
+
   const handleImageSelect = async (file: File) => {
+    // Check if user is authenticated
+    if (!user) {
+      toast({
+        title: 'Sign in required',
+        description: 'Please sign in to analyze images',
+        variant: "destructive"
+      });
+      navigate('/auth');
+      return;
+    }
+
+    // Check credits
+    if (!hasPaid && uploadCount >= 2) {
+      setShowPaymentDialog(true);
+      return;
+    }
+
     try {
       setIsAnalyzing(true);
       const results = await analyzeImage(file);
       setAnalysisResults(results);
+
+      // Increment upload count
+      await supabase
+        .from('user_credits')
+        .update({ upload_count: uploadCount + 1 })
+        .eq('user_id', user.id);
+      
+      setUploadCount(uploadCount + 1);
     } catch (error) {
       toast({
         title: t('analysisFailed'),
@@ -90,6 +180,50 @@ const Index = () => {
       });
     } finally {
       setIsAnalyzing(false);
+    }
+  };
+
+  const handlePayment = async () => {
+    if (!phoneNumber || !user) return;
+
+    setIsProcessingPayment(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('hormuud-payment', {
+        body: {
+          communityId: 'unlimited-uploads',
+          userId: user.id,
+          amount: 1,
+          phoneNumber: phoneNumber,
+        },
+      });
+
+      if (error) throw error;
+
+      if (data.success) {
+        // Update credits to show payment completed
+        await supabase
+          .from('user_credits')
+          .update({ has_paid: true, upload_count: 0 })
+          .eq('user_id', user.id);
+
+        setHasPaid(true);
+        setUploadCount(0);
+        setShowPaymentDialog(false);
+        setPhoneNumber('');
+
+        toast({
+          title: 'Payment Successful',
+          description: 'You now have unlimited uploads and community access!',
+        });
+      }
+    } catch (error: any) {
+      toast({
+        title: 'Payment Failed',
+        description: error.message || 'Please try again',
+        variant: "destructive"
+      });
+    } finally {
+      setIsProcessingPayment(false);
     }
   };
 
@@ -153,6 +287,16 @@ const Index = () => {
         <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
           {t('pageDescription')}
         </p>
+        {user && !hasPaid && (
+          <p className="text-sm text-muted-foreground">
+            Uploads remaining: {Math.max(0, 2 - uploadCount)} / 2 (Free tier - resets in 24h)
+          </p>
+        )}
+        {user && hasPaid && (
+          <p className="text-sm text-primary font-medium">
+            ✓ Unlimited uploads active
+          </p>
+        )}
       </div>
 
       <ImageUpload onImageSelect={handleImageSelect} />
@@ -167,6 +311,52 @@ const Index = () => {
       {!isAnalyzing && analysisResults && (
         <AnalysisResult results={analysisResults} />
       )}
+
+      <Dialog open={showPaymentDialog} onOpenChange={setShowPaymentDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Unlock Unlimited Uploads</DialogTitle>
+            <DialogDescription>
+              You've used your 2 free uploads. Pay $1 to get unlimited uploads and join the community!
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label htmlFor="phone">EVC Plus Phone Number</Label>
+              <Input
+                id="phone"
+                placeholder="252xxxxxxxxx"
+                value={phoneNumber}
+                onChange={(e) => setPhoneNumber(e.target.value)}
+              />
+            </div>
+            <p className="text-sm text-muted-foreground">
+              Or wait 24 hours for your free uploads to reset.
+            </p>
+          </div>
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setShowPaymentDialog(false)}
+            >
+              Wait 24 Hours
+            </Button>
+            <Button
+              onClick={handlePayment}
+              disabled={!phoneNumber || isProcessingPayment}
+            >
+              {isProcessingPayment ? (
+                <>
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  Processing...
+                </>
+              ) : (
+                'Pay $1 via EVC Plus'
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
