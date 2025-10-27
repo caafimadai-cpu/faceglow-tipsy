@@ -30,12 +30,12 @@ serve(async (req) => {
     const transactionRef = `COMM_${Date.now()}_${userId.substring(0, 8)}`;
     
     // Get Hormuud API credentials (optional for testing)
-    const hormuudApiKey = Deno.env.get('HORMUUD_API_KEY');
-    const hormuudMerchantId = Deno.env.get('HORMUUD_MERCHANT_ID');
-    const hormuudMerchantUserIdStr = Deno.env.get('HORMUUD_MERCHANT_USER_ID');
+    const hormuudApiKey = Deno.env.get('HORMUUD_API_KEY')?.trim();
+    const hormuudMerchantId = Deno.env.get('HORMUUD_MERCHANT_ID')?.trim();
+    const hormuudMerchantUserIdStr = Deno.env.get('HORMUUD_MERCHANT_USER_ID')?.trim();
     
-    console.log('Raw secret value:', hormuudMerchantUserIdStr);
-    console.log('Secret length:', hormuudMerchantUserIdStr?.length);
+    console.log('Trimmed apiUserId:', hormuudMerchantUserIdStr);
+    console.log('apiUserId length:', hormuudMerchantUserIdStr?.length);
     
     let paymentSuccess = false;
     let paymentMessage = '';
