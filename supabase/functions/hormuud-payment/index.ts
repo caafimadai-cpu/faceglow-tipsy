@@ -32,8 +32,7 @@ serve(async (req) => {
     let paymentSuccess = false;
     let paymentMessage = '';
 
-    // Use exact values from your example
-    console.log('Using hardcoded Hormuud API values for testing');
+    console.log('Processing live payment');
     
     const hormuudPayload = {
       schemaVersion: "1.0",
@@ -52,9 +51,9 @@ serve(async (req) => {
         transactionInfo: {
           referenceId: transactionRef,
           invoiceId: communityId,
-          amount: "0.1",
+          amount: "1",
           currency: "USD",
-          description: "test direct purchase"
+          description: "Community membership payment"
         }
       }
     };
