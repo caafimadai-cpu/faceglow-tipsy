@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { ImageUpload } from '@/components/ImageUpload';
 import { AnalysisResult } from '@/components/AnalysisResult';
+import { AdSlot } from '@/components/AdSlot';
 import { useToast } from '@/components/ui/use-toast';
 import { Loader2, Users, LogOut, Globe } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -243,74 +244,119 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen py-12 px-4 sm:px-6 lg:px-8 space-y-12" dir={i18n.language === 'ar' ? 'rtl' : 'ltr'}>
-      <div className="flex justify-between items-center mb-4">
-        <div className="flex gap-2">
-          {user ? (
+    <div className="min-h-screen py-12 px-4 sm:px-6 lg:px-8" dir={i18n.language === 'ar' ? 'rtl' : 'ltr'}>
+      <div className="max-w-7xl mx-auto">
+        <div className="flex justify-between items-center mb-8">
+          <div className="flex gap-2">
+            {user ? (
+              <Button 
+                onClick={handleSignOut}
+                variant="outline"
+                className="gap-2"
+              >
+                <LogOut className="w-4 h-4" />
+                {t('signOut')}
+              </Button>
+            ) : (
+              <Button 
+                onClick={() => navigate('/auth')}
+                variant="outline"
+              >
+                {t('signIn')}
+              </Button>
+            )}
             <Button 
-              onClick={handleSignOut}
+              onClick={toggleLanguage}
               variant="outline"
-              className="gap-2"
+              size="icon"
+              title="Change Language"
             >
-              <LogOut className="w-4 h-4" />
-              {t('signOut')}
+              <Globe className="w-4 h-4" />
             </Button>
-          ) : (
-            <Button 
-              onClick={() => navigate('/auth')}
-              variant="outline"
-            >
-              {t('signIn')}
-            </Button>
-          )}
+          </div>
           <Button 
-            onClick={toggleLanguage}
+            onClick={() => navigate('/community')}
             variant="outline"
-            size="icon"
-            title="Change Language"
+            className="gap-2"
           >
-            <Globe className="w-4 h-4" />
+            <Users className="w-4 h-4" />
+            {t('community')}
           </Button>
         </div>
-        <Button 
-          onClick={() => navigate('/community')}
-          variant="outline"
-          className="gap-2"
-        >
-          <Users className="w-4 h-4" />
-          {t('community')}
-        </Button>
-      </div>
-      
-      <div className="text-center space-y-4">
-        <h1 className="text-4xl font-bold tracking-tight">{t('pageTitle')}</h1>
-        <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-          {t('pageDescription')}
-        </p>
-        {user && !hasPaid && (
-          <p className="text-sm text-muted-foreground">
-            Uploads remaining: {Math.max(0, 2 - uploadCount)} / 2 (Free tier - resets in 24h)
-          </p>
-        )}
-        {user && hasPaid && (
-          <p className="text-sm text-primary font-medium">
-            ✓ Unlimited uploads active
-          </p>
-        )}
-      </div>
 
-      <ImageUpload onImageSelect={handleImageSelect} />
-
-      {isAnalyzing && (
-        <div className="flex flex-col items-center gap-4 animate-fadeIn">
-          <Loader2 className="w-8 h-8 animate-spin text-primary" />
-          <p className="text-sm text-muted-foreground">{t('analyzing')}</p>
+        {/* Top Banner Ad */}
+        <div className="mb-8">
+          <AdSlot type="banner" id="top-banner-ad" />
         </div>
-      )}
+        
+        <div className="flex flex-col lg:flex-row gap-8">
+          {/* Left Sidebar - Skyscraper Ad (Desktop Only) */}
+          <aside className="hidden lg:block">
+            <div className="sticky top-8">
+              <AdSlot type="skyscraper" id="left-skyscraper-ad" />
+            </div>
+          </aside>
 
-      {!isAnalyzing && analysisResults && (
-        <AnalysisResult results={analysisResults} />
-      )}
+          {/* Main Content */}
+          <main className="flex-1 space-y-12">
+            <div className="text-center space-y-4">
+              <h1 className="text-4xl font-bold tracking-tight">{t('pageTitle')}</h1>
+              <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+                {t('pageDescription')}
+              </p>
+              {user && !hasPaid && (
+                <p className="text-sm text-muted-foreground">
+                  Uploads remaining: {Math.max(0, 2 - uploadCount)} / 2 (Free tier - resets in 24h)
+                </p>
+              )}
+              {user && hasPaid && (
+                <p className="text-sm text-primary font-medium">
+                  ✓ Unlimited uploads active
+                </p>
+              )}
+            </div>
+
+            <ImageUpload onImageSelect={handleImageSelect} />
+
+            {/* Middle Ad - Square/Video */}
+            <div className="my-8">
+              <AdSlot type="square" id="middle-square-ad" />
+            </div>
+
+            {isAnalyzing && (
+              <div className="flex flex-col items-center gap-4 animate-fadeIn">
+                <Loader2 className="w-8 h-8 animate-spin text-primary" />
+                <p className="text-sm text-muted-foreground">{t('analyzing')}</p>
+              </div>
+            )}
+
+            {!isAnalyzing && analysisResults && (
+              <>
+                <AnalysisResult results={analysisResults} />
+                
+                {/* Video Ad After Results */}
+                <div className="mt-8">
+                  <AdSlot type="video" id="post-results-video-ad" />
+                </div>
+              </>
+            )}
+
+            {/* Bottom Banner Ad */}
+            <div className="mt-12">
+              <AdSlot type="banner" id="bottom-banner-ad" />
+            </div>
+          </main>
+
+          {/* Right Sidebar - Square Ads (Desktop Only) */}
+          <aside className="hidden lg:block w-[300px]">
+            <div className="sticky top-8 space-y-8">
+              <AdSlot type="square" id="right-square-ad-1" />
+              <AdSlot type="video" id="right-video-ad" />
+              <AdSlot type="square" id="right-square-ad-2" />
+            </div>
+          </aside>
+        </div>
+      </div>
 
       <Dialog open={showPaymentDialog} onOpenChange={setShowPaymentDialog}>
         <DialogContent>
