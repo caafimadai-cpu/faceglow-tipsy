@@ -286,14 +286,14 @@ const Index = () => {
 
         {/* Top Banner Ad */}
         <div className="mb-8">
-          <AdSlot type="banner" id="top-banner-ad" />
+          <AdSlot type="banner" placement="top-banner" id="top-banner-ad" />
         </div>
         
         <div className="flex flex-col lg:flex-row gap-8">
           {/* Left Sidebar - Skyscraper Ad (Desktop Only) */}
           <aside className="hidden lg:block">
             <div className="sticky top-8">
-              <AdSlot type="skyscraper" id="left-skyscraper-ad" />
+              <AdSlot type="skyscraper" placement="left-skyscraper" id="left-skyscraper-ad" />
             </div>
           </aside>
 
@@ -320,7 +320,7 @@ const Index = () => {
 
             {/* Middle Ad - Square/Video */}
             <div className="my-8">
-              <AdSlot type="square" id="middle-square-ad" />
+              <AdSlot type="square" placement="middle-square" id="middle-square-ad" />
             </div>
 
             {isAnalyzing && (
@@ -336,23 +336,23 @@ const Index = () => {
                 
                 {/* Video Ad After Results */}
                 <div className="mt-8">
-                  <AdSlot type="video" id="post-results-video-ad" />
+                  <AdSlot type="video" placement="post-results-video" id="post-results-video-ad" />
                 </div>
               </>
             )}
 
             {/* Bottom Banner Ad */}
             <div className="mt-12">
-              <AdSlot type="banner" id="bottom-banner-ad" />
+              <AdSlot type="banner" placement="bottom-banner" id="bottom-banner-ad" />
             </div>
           </main>
 
           {/* Right Sidebar - Square Ads (Desktop Only) */}
           <aside className="hidden lg:block w-[300px]">
             <div className="sticky top-8 space-y-8">
-              <AdSlot type="square" id="right-square-ad-1" />
-              <AdSlot type="video" id="right-video-ad" />
-              <AdSlot type="square" id="right-square-ad-2" />
+              <AdSlot type="square" placement="right-square-1" id="right-square-ad-1" />
+              <AdSlot type="video" placement="right-video" id="right-video-ad" />
+              <AdSlot type="square" placement="right-square-2" id="right-square-ad-2" />
             </div>
           </aside>
         </div>

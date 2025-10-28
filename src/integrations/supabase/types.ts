@@ -14,6 +14,42 @@ export type Database = {
   }
   public: {
     Tables: {
+      ads: {
+        Row: {
+          click_url: string | null
+          created_at: string
+          id: string
+          is_active: boolean
+          media_url: string
+          placement: string
+          title: string
+          type: string
+          updated_at: string
+        }
+        Insert: {
+          click_url?: string | null
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          media_url: string
+          placement: string
+          title: string
+          type: string
+          updated_at?: string
+        }
+        Update: {
+          click_url?: string | null
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          media_url?: string
+          placement?: string
+          title?: string
+          type?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       communities: {
         Row: {
           created_at: string
