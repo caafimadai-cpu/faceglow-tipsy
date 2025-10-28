@@ -1,12 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { supabase } from '@/integrations/supabase/client';
 import { cn } from '@/lib/utils';
+import { supabase } from '@/integrations/supabase/client';
 
 interface AdSlotProps {
   type: 'banner' | 'video' | 'square' | 'skyscraper';
-  placement: 'top-banner' | 'bottom-banner' | 'left-skyscraper' | 'right-square-1' | 'right-square-2' | 'right-video' | 'middle-square' | 'post-results-video';
+  placement: string;
   className?: string;
-  id?: string;
 }
 
 interface Ad {
@@ -14,12 +13,10 @@ interface Ad {
   title: string;
   type: string;
   media_url: string;
-  click_url: string | null;
-  placement: string;
-  is_active: boolean;
+  click_url?: string;
 }
 
-export const AdSlot: React.FC<AdSlotProps> = ({ type, placement, className, id }) => {
+export const AdSlot: React.FC<AdSlotProps> = ({ type, placement, className }) => {
   const [ad, setAd] = useState<Ad | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -42,8 +39,6 @@ export const AdSlot: React.FC<AdSlotProps> = ({ type, placement, className, id }
     }
   };
 
-  const dimensions = adDimensions[type];
-
   useEffect(() => {
     fetchAd();
   }, [placement]);
@@ -55,6 +50,7 @@ export const AdSlot: React.FC<AdSlotProps> = ({ type, placement, className, id }
         .select('*')
         .eq('placement', placement)
         .eq('is_active', true)
+        .limit(1)
         .maybeSingle();
 
       if (error) throw error;
@@ -66,7 +62,9 @@ export const AdSlot: React.FC<AdSlotProps> = ({ type, placement, className, id }
     }
   };
 
-  const handleAdClick = () => {
+  const dimensions = adDimensions[type];
+
+  const handleClick = () => {
     if (ad?.click_url) {
       window.open(ad.click_url, '_blank', 'noopener,noreferrer');
     }
@@ -80,7 +78,6 @@ export const AdSlot: React.FC<AdSlotProps> = ({ type, placement, className, id }
           `${dimensions.mobile} md:${dimensions.desktop}`,
           className
         )}
-        id={id}
       />
     );
   }
@@ -93,22 +90,17 @@ export const AdSlot: React.FC<AdSlotProps> = ({ type, placement, className, id }
           `${dimensions.mobile} md:${dimensions.desktop}`,
           className
         )}
-        id={id}
       >
         <div className="text-center p-4">
-          <p className="text-xs text-muted-foreground uppercase tracking-wider mb-1">
-            Advertisement Space
-          </p>
-          <p className="text-xs text-muted-foreground/60">
-            {type === 'banner' && 'Banner (728×90 / 320×50)'}
-            {type === 'video' && 'Video Ad (300×250)'}
-            {type === 'square' && 'Square Ad (300×250)'}
-            {type === 'skyscraper' && 'Skyscraper (160×600)'}
+          <p className="text-xs text-muted-foreground uppercase tracking-wider">
+            Ad Space Available
           </p>
         </div>
       </div>
     );
   }
+
+  const isVideo = type === 'video' || ad.media_url.match(/\.(mp4|webm|ogg)$/i);
 
   return (
     <div 
@@ -118,16 +110,14 @@ export const AdSlot: React.FC<AdSlotProps> = ({ type, placement, className, id }
         ad.click_url && "cursor-pointer hover:opacity-90 transition-opacity",
         className
       )}
-      id={id}
-      onClick={handleAdClick}
+      onClick={handleClick}
       role={ad.click_url ? "button" : undefined}
       tabIndex={ad.click_url ? 0 : undefined}
     >
-      {ad.type === 'video' ? (
+      {isVideo ? (
         <video
           src={ad.media_url}
           className="w-full h-full object-cover"
-          controls
           autoPlay
           muted
           loop
