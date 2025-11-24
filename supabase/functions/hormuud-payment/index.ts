@@ -34,6 +34,15 @@ serve(async (req) => {
 
     console.log('Processing live payment');
     
+    // Get credentials from environment variables for security
+    const merchantUid = Deno.env.get('HORMUUD_MERCHANT_ID');
+    const apiUserId = Deno.env.get('HORMUUD_MERCHANT_USER_ID');
+    const apiKey = Deno.env.get('HORMUUD_API_KEY');
+
+    if (!merchantUid || !apiUserId || !apiKey) {
+      throw new Error('Payment gateway credentials not configured');
+    }
+    
     const hormuudPayload = {
       schemaVersion: "1.0",
       requestId: transactionRef,
@@ -41,9 +50,9 @@ serve(async (req) => {
       channelName: "WEB",
       serviceName: "API_PURCHASE",
       serviceParams: {
-        merchantUid: "M0913768",
-        apiUserId: "1007765",
-        apiKey: "API-994409942AHX",
+        merchantUid,
+        apiUserId,
+        apiKey,
         paymentMethod: "MWALLET_ACCOUNT",
         payerInfo: {
           accountNo: phoneNumber
