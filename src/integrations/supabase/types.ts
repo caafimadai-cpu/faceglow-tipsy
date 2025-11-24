@@ -18,6 +18,7 @@ export type Database = {
         Row: {
           click_url: string | null
           created_at: string
+          creator_id: string | null
           id: string
           is_active: boolean
           media_url: string
@@ -29,6 +30,7 @@ export type Database = {
         Insert: {
           click_url?: string | null
           created_at?: string
+          creator_id?: string | null
           id?: string
           is_active?: boolean
           media_url: string
@@ -40,6 +42,7 @@ export type Database = {
         Update: {
           click_url?: string | null
           created_at?: string
+          creator_id?: string | null
           id?: string
           is_active?: boolean
           media_url?: string
