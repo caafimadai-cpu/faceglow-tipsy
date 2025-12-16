@@ -74,11 +74,14 @@ export const AdSlot: React.FC<AdSlotProps> = ({ type, placement, className }) =>
     return (
       <div 
         className={cn(
-          "ad-slot mx-auto bg-muted/20 rounded-lg animate-pulse",
+          "mx-auto rounded-xl overflow-hidden",
+          "bg-secondary/30 border border-border/30",
           `${dimensions.mobile} md:${dimensions.desktop}`,
           className
         )}
-      />
+      >
+        <div className="w-full h-full animate-pulse bg-gradient-to-r from-secondary/50 via-secondary to-secondary/50" />
+      </div>
     );
   }
 
@@ -86,14 +89,16 @@ export const AdSlot: React.FC<AdSlotProps> = ({ type, placement, className }) =>
     return (
       <div 
         className={cn(
-          "ad-slot mx-auto bg-muted/30 border border-dashed border-muted-foreground/20 rounded-lg flex items-center justify-center",
+          "mx-auto rounded-xl overflow-hidden",
+          "bg-secondary/20 border border-dashed border-border/50",
+          "flex items-center justify-center",
           `${dimensions.mobile} md:${dimensions.desktop}`,
           className
         )}
       >
         <div className="text-center p-4">
-          <p className="text-xs text-muted-foreground uppercase tracking-wider">
-            Ad Space Available
+          <p className="text-[10px] text-muted-foreground/50 uppercase tracking-widest font-medium">
+            Advertisement
           </p>
         </div>
       </div>
@@ -105,9 +110,11 @@ export const AdSlot: React.FC<AdSlotProps> = ({ type, placement, className }) =>
   return (
     <div 
       className={cn(
-        "ad-slot mx-auto overflow-hidden rounded-lg",
+        "mx-auto overflow-hidden rounded-xl",
+        "border border-border/30 bg-card/50",
+        "transition-all duration-300",
         `${dimensions.mobile} md:${dimensions.desktop}`,
-        ad.click_url && "cursor-pointer hover:opacity-90 transition-opacity",
+        ad.click_url && "cursor-pointer hover:border-primary/30 hover:shadow-lg hover:shadow-primary/5",
         className
       )}
       onClick={handleClick}
