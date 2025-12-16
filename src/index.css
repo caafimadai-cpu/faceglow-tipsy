@@ -1,29 +1,39 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=DM+Sans:wght@400;500;600;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
- 
+
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 240 10% 3.9%;
-    --card: 0 0% 100%;
-    --card-foreground: 240 10% 3.9%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 240 10% 3.9%;
-    --primary: 346 75% 62%;
-    --primary-foreground: 355.7 100% 97.3%;
-    --secondary: 240 4.8% 95.9%;
-    --secondary-foreground: 240 5.9% 10%;
-    --muted: 240 4.8% 95.9%;
-    --muted-foreground: 240 3.8% 46.1%;
-    --accent: 240 4.8% 95.9%;
-    --accent-foreground: 240 5.9% 10%;
-    --destructive: 0 84.2% 60.2%;
+    --background: 220 16% 4%;
+    --foreground: 40 20% 96%;
+    --card: 220 14% 8%;
+    --card-foreground: 40 20% 96%;
+    --popover: 220 14% 10%;
+    --popover-foreground: 40 20% 96%;
+    --primary: 38 92% 60%;
+    --primary-foreground: 220 16% 4%;
+    --secondary: 220 12% 14%;
+    --secondary-foreground: 40 15% 85%;
+    --muted: 220 12% 18%;
+    --muted-foreground: 220 8% 55%;
+    --accent: 38 80% 45%;
+    --accent-foreground: 40 20% 96%;
+    --destructive: 0 72% 55%;
     --destructive-foreground: 0 0% 98%;
-    --border: 240 5.9% 90%;
-    --input: 240 5.9% 90%;
-    --ring: 346 75% 62%;
-    --radius: 0.75rem;
+    --border: 220 12% 18%;
+    --input: 220 12% 14%;
+    --ring: 38 92% 60%;
+    --radius: 0.5rem;
+    
+    /* Custom design tokens */
+    --gradient-gold: linear-gradient(135deg, hsl(38 92% 60%) 0%, hsl(28 85% 50%) 100%);
+    --gradient-subtle: linear-gradient(180deg, hsl(220 14% 10%) 0%, hsl(220 16% 6%) 100%);
+    --gradient-card: linear-gradient(145deg, hsl(220 14% 10%) 0%, hsl(220 14% 7%) 100%);
+    --shadow-gold: 0 0 40px hsl(38 92% 60% / 0.15);
+    --shadow-card: 0 4px 24px hsl(220 16% 0% / 0.4);
+    --shadow-elevated: 0 8px 40px hsl(220 16% 0% / 0.6);
   }
 }
 
@@ -31,24 +41,209 @@
   * {
     @apply border-border;
   }
+  
+  html {
+    scroll-behavior: smooth;
+  }
+  
   body {
-    @apply bg-background text-foreground;
-    font-feature-settings: "rlig" 1, "calt" 1;
+    @apply bg-background text-foreground antialiased;
+    font-family: 'DM Sans', system-ui, sans-serif;
+    background: 
+      radial-gradient(ellipse 80% 50% at 50% -20%, hsl(38 92% 60% / 0.05) 0%, transparent 50%),
+      radial-gradient(ellipse 60% 40% at 0% 100%, hsl(38 80% 45% / 0.03) 0%, transparent 40%),
+      hsl(var(--background));
+    background-attachment: fixed;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Playfair Display', Georgia, serif;
+    @apply font-semibold tracking-tight;
   }
 }
 
-.drop-zone {
-  @apply relative border-2 border-dashed rounded-lg p-12 transition-all duration-300 ease-in-out;
+@layer components {
+  /* Premium Upload Zone */
+  .drop-zone {
+    @apply relative rounded-2xl transition-all duration-500 ease-out overflow-hidden;
+    background: var(--gradient-card);
+    border: 1px solid hsl(var(--border));
+    box-shadow: var(--shadow-card);
+  }
+  
+  .drop-zone::before {
+    content: '';
+    @apply absolute inset-0 opacity-0 transition-opacity duration-500;
+    background: radial-gradient(circle at center, hsl(38 92% 60% / 0.1) 0%, transparent 70%);
+  }
+  
+  .drop-zone:hover::before,
+  .drop-zone.active::before {
+    @apply opacity-100;
+  }
+  
+  .drop-zone.active {
+    border-color: hsl(var(--primary) / 0.5);
+    box-shadow: var(--shadow-gold);
+  }
+
+  /* Premium Analysis Cards */
+  .analysis-card {
+    @apply relative rounded-2xl p-6 transition-all duration-500;
+    background: var(--gradient-card);
+    border: 1px solid hsl(var(--border));
+    box-shadow: var(--shadow-card);
+  }
+  
+  .analysis-card::before {
+    content: '';
+    @apply absolute inset-0 rounded-2xl opacity-0 transition-opacity duration-500 pointer-events-none;
+    background: radial-gradient(circle at top right, hsl(38 92% 60% / 0.08) 0%, transparent 50%);
+  }
+  
+  .analysis-card:hover::before {
+    @apply opacity-100;
+  }
+  
+  .analysis-card:hover {
+    border-color: hsl(var(--primary) / 0.3);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-elevated);
+  }
+
+  /* Recommendation Items */
+  .recommendation-item {
+    @apply flex items-start gap-4 p-4 rounded-xl transition-all duration-300;
+    background: hsl(var(--secondary) / 0.5);
+    border: 1px solid transparent;
+  }
+  
+  .recommendation-item:hover {
+    background: hsl(var(--secondary));
+    border-color: hsl(var(--border));
+  }
+  
+  /* Premium Progress Bar */
+  .progress-track {
+    @apply relative h-2 rounded-full overflow-hidden;
+    background: hsl(var(--secondary));
+  }
+  
+  .progress-fill {
+    @apply absolute top-0 left-0 h-full rounded-full transition-all duration-1000 ease-out;
+    background: var(--gradient-gold);
+    box-shadow: 0 0 12px hsl(38 92% 60% / 0.5);
+  }
+  
+  /* Premium Buttons */
+  .btn-premium {
+    @apply relative overflow-hidden font-semibold transition-all duration-300;
+  }
+  
+  .btn-premium::before {
+    content: '';
+    @apply absolute inset-0 opacity-0 transition-opacity duration-300;
+    background: linear-gradient(45deg, transparent, hsl(0 0% 100% / 0.1), transparent);
+    transform: translateX(-100%);
+  }
+  
+  .btn-premium:hover::before {
+    @apply opacity-100;
+    animation: shimmer 0.6s ease-out;
+  }
+  
+  /* Glass Effect */
+  .glass {
+    @apply backdrop-blur-xl;
+    background: hsl(var(--card) / 0.8);
+    border: 1px solid hsl(var(--border) / 0.5);
+  }
+  
+  /* Hero Glow */
+  .hero-glow {
+    @apply absolute rounded-full blur-3xl opacity-20 pointer-events-none;
+    background: hsl(var(--primary));
+  }
+  
+  /* Floating Label */
+  .floating-badge {
+    @apply inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium;
+    background: hsl(var(--primary) / 0.1);
+    border: 1px solid hsl(var(--primary) / 0.3);
+    color: hsl(var(--primary));
+  }
+  
+  /* Divider */
+  .divider-glow {
+    @apply h-px w-full;
+    background: linear-gradient(90deg, transparent, hsl(var(--border)), transparent);
+  }
 }
 
-.drop-zone.active {
-  @apply border-primary bg-primary/5;
+@layer utilities {
+  /* Text Gradient */
+  .text-gradient {
+    @apply bg-clip-text text-transparent;
+    background-image: var(--gradient-gold);
+  }
+  
+  /* Subtle Grain Texture */
+  .grain {
+    @apply relative;
+  }
+  
+  .grain::after {
+    content: '';
+    @apply absolute inset-0 pointer-events-none opacity-[0.015];
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+  }
 }
 
-.analysis-card {
-  @apply bg-white rounded-xl shadow-lg p-6 transition-all duration-300 hover:shadow-xl;
+/* Keyframe Animations */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
-.recommendation-item {
-  @apply flex items-start gap-4 p-4 rounded-lg bg-secondary/50 transition-all duration-300 hover:bg-secondary;
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(40px); }
+  to { opacity: 1; transform: translateY(0); }
 }
+
+@keyframes pulse-glow {
+  0%, 100% { opacity: 0.2; transform: scale(1); }
+  50% { opacity: 0.3; transform: scale(1.05); }
+}
+
+@keyframes shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.6s ease-out forwards;
+}
+
+.animate-slideUp {
+  animation: slideUp 0.8s ease-out forwards;
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 4s ease-in-out infinite;
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+/* Staggered Animations */
+.stagger-1 { animation-delay: 0.1s; }
+.stagger-2 { animation-delay: 0.2s; }
+.stagger-3 { animation-delay: 0.3s; }
+.stagger-4 { animation-delay: 0.4s; }
+.stagger-5 { animation-delay: 0.5s; }
