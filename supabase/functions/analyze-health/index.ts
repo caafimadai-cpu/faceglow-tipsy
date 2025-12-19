@@ -67,8 +67,8 @@ serve(async (req) => {
     if (vitamins.length === 0 && gutHealth.length === 0 && bodyHealth.length === 0) {
       return new Response(JSON.stringify({
         insights: [],
-        summary: "No health data found yet. Start tracking your vitamins, gut health, and body metrics to get personalized AI insights!",
-        recommendations: ["Log your first vitamin intake", "Track your gut health daily", "Record your sleep and energy levels"]
+        summary: "Weli xog caafimaad lama helin. Bilow inaad raadraacdo fitamiinkaaga, caafimaadka mindhicirka, iyo cabbirrada jirka si aad u hesho talooyinka AI-ga!",
+        recommendations: ["Qor fitamiin ugu horeeya", "Raadraac caafimaadka mindhicirkaaga maalin walba", "Duub saacadaha hurdadaada iyo heerka tamartaada"]
       }), {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
@@ -118,42 +118,44 @@ serve(async (req) => {
         messages: [
           {
             role: 'user',
-            content: `You are a health analytics AI. Analyze this user's health tracking data and provide personalized insights.
+            content: `Waxaad tahay khabiir falanqaynta caafimaadka AI. Falanqee xogta raadraacidda caafimaadka isticmaalaha oo bixi talooyinka shaqsiyeed.
 
-DATA:
+MUHIIM: Dhammaan jawaabaha waa inay ku qornaadaan AF-SOOMAALI KELIYA.
+
+XOGTA:
 ${JSON.stringify(dataSummary, null, 2)}
 
-Analyze patterns and correlations in this data. Look for:
-1. Vitamin intake consistency and gaps
-2. Gut health trends (digestion scores, bloating patterns)
-3. Sleep and energy correlations
-4. Water intake effects on digestion
-5. Exercise impact on energy and sleep quality
-6. Stress level patterns
+Falanqee qaababka iyo isku xirnaanshaha xogta. Raadi:
+1. Joogitaanka iyo farqiga qaadashada fitamiinka
+2. Isbaddelka caafimaadka mindhicirka (dhibcaha dheefshiidka, heerarka baruurta)
+3. Isku xirnaanshaha hurdada iyo tamarta
+4. Saamaynta cabidda biyaha ee dheefshiidka
+5. Saamaynta jimicsiga ee hurdada iyo tamarta
+6. Qaababka heerarka walbahaarka
 
-Respond with ONLY a JSON object (no markdown):
+Ka jawaab JSON object keliya (markdown la'aan):
 {
-  "summary": "<2-3 sentence overall health summary>",
+  "summary": "<2-3 weedho oo ku saabsan guud ahaan caafimaadka - AF-SOOMAALI>",
   "insights": [
     {
-      "title": "<short insight title>",
-      "description": "<detailed finding>",
+      "title": "<cinwaan gaaban - AF-SOOMAALI>",
+      "description": "<faahfaahin buuxda - AF-SOOMAALI>",
       "type": "<positive|warning|neutral>",
       "icon": "<vitamin|gut|sleep|energy|water|exercise|stress>"
     }
   ],
   "recommendations": [
-    "<actionable recommendation 1>",
-    "<actionable recommendation 2>",
-    "<actionable recommendation 3>",
-    "<actionable recommendation 4>"
+    "<talo 1 - AF-SOOMAALI>",
+    "<talo 2 - AF-SOOMAALI>",
+    "<talo 3 - AF-SOOMAALI>",
+    "<talo 4 - AF-SOOMAALI>"
   ],
   "correlations": [
-    "<correlation found, e.g., 'Higher water intake correlates with better digestion scores'>"
+    "<isku xirnaansho la helay, tusaale: 'Cabidda biyaha badan waxay la xiriirtaa dheefshiid wanaagsan' - AF-SOOMAALI>"
   ]
 }
 
-Provide 3-6 insights based on available data. Be specific and reference actual data patterns.`
+Bixi 3-6 aragtiyo ku salaysan xogta jirta. Noqo mid gaar ah oo tixraac qaababka xogta dhabta ah. DHAMMAAN QORAALKU WAA INUU AHAADAA AF-SOOMAALI.`
           }
         ]
       })
@@ -195,9 +197,9 @@ Provide 3-6 insights based on available data. Be specific and reference actual d
     } catch (parseError) {
       console.error('Failed to parse AI response:', parseError);
       result = {
-        summary: "Analysis complete. Keep tracking your health data for more detailed insights.",
+        summary: "Falanqaynta waa la dhammeeyay. Sii wad raadraacidda xogtaada caafimaadka si aad u hesho talooyinka faahfaahsan.",
         insights: [],
-        recommendations: ["Continue logging your daily health metrics for better analysis"],
+        recommendations: ["Sii wad qorista cabbiradaada caafimaadka maalinlaha ah si loo helo falanqayn wanaagsan"],
         correlations: []
       };
     }

@@ -870,25 +870,25 @@ const HealthTracker = () => {
           <TabsContent value="insights" className="space-y-6 animate-fadeIn">
             <div className="analysis-card">
               <div className="flex items-center justify-between mb-6">
-                <div className="flex items-center gap-3">
+              <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-xl bg-primary/10 border border-primary/30 flex items-center justify-center">
                     <Brain className="w-5 h-5 text-primary" />
                   </div>
                   <div>
-                    <h3 className="font-serif text-lg font-semibold">AI Health Analysis</h3>
-                    <p className="text-xs text-muted-foreground">Powered by advanced AI</p>
+                    <h3 className="font-serif text-lg font-semibold">Falanqaynta AI Caafimaadka</h3>
+                    <p className="text-xs text-muted-foreground">Waxaa ku shaqeeya AI-ga casriga ah</p>
                   </div>
                 </div>
                 <Button onClick={fetchAIInsights} disabled={loadingInsights} className="gap-2">
                   {loadingInsights ? (
                     <>
                       <Loader2 className="w-4 h-4 animate-spin" />
-                      Analyzing...
+                      Waa la falanqaynayaa...
                     </>
                   ) : (
                     <>
                       <Sparkles className="w-4 h-4" />
-                      Analyze My Data
+                      Falanqee Xogtayda
                     </>
                   )}
                 </Button>
@@ -897,9 +897,9 @@ const HealthTracker = () => {
               {!aiAnalysis && !loadingInsights && (
                 <div className="text-center py-12">
                   <Brain className="w-16 h-16 mx-auto text-muted-foreground/30 mb-4" />
-                  <p className="text-muted-foreground mb-2">No analysis yet</p>
+                  <p className="text-muted-foreground mb-2">Weli falanqayn la ma samayn</p>
                   <p className="text-sm text-muted-foreground/70">
-                    Click "Analyze My Data" to get AI-powered insights based on your tracked health data
+                    Dhagsii "Falanqee Xogtayda" si aad u hesho talooyinka AI ku salaysan xogtaada caafimaadka
                   </p>
                 </div>
               )}
@@ -911,8 +911,8 @@ const HealthTracker = () => {
                     <div className="absolute inset-0 rounded-full border-2 border-transparent border-t-primary animate-spin" />
                     <Brain className="absolute inset-0 m-auto w-6 h-6 text-primary animate-pulse" />
                   </div>
-                  <p className="text-muted-foreground">Analyzing your health patterns...</p>
-                  <p className="text-sm text-muted-foreground/70">This may take a few seconds</p>
+                  <p className="text-muted-foreground">Waxaa la falanqaynayaa qaababka caafimaadkaaga...</p>
+                  <p className="text-sm text-muted-foreground/70">Tani waxay qaadan kartaa dhowr ilbiriqsi</p>
                 </div>
               )}
             </div>
@@ -925,7 +925,7 @@ const HealthTracker = () => {
                     <div className="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center">
                       <TrendingUp className="w-5 h-5 text-emerald-400" />
                     </div>
-                    <h3 className="font-serif text-lg font-semibold">Summary</h3>
+                    <h3 className="font-serif text-lg font-semibold">Soo Koobid</h3>
                   </div>
                   <p className="text-muted-foreground leading-relaxed">{aiAnalysis.summary}</p>
                 </div>
@@ -933,7 +933,7 @@ const HealthTracker = () => {
                 {/* Insights */}
                 {aiAnalysis.insights && aiAnalysis.insights.length > 0 && (
                   <div className="space-y-4">
-                    <h3 className="font-serif text-lg font-semibold">Key Insights</h3>
+                    <h3 className="font-serif text-lg font-semibold">Aragtiyo Muhiim ah</h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       {aiAnalysis.insights.map((insight, index) => {
                         const Icon = getInsightIcon(insight.icon);
@@ -968,7 +968,7 @@ const HealthTracker = () => {
                       <div className="w-10 h-10 rounded-xl bg-purple-500/10 border border-purple-500/30 flex items-center justify-center">
                         <Activity className="w-5 h-5 text-purple-400" />
                       </div>
-                      <h3 className="font-serif text-lg font-semibold">Pattern Correlations</h3>
+                      <h3 className="font-serif text-lg font-semibold">Isku-xirnaanshaha Qaababka</h3>
                     </div>
                     <div className="space-y-2">
                       {aiAnalysis.correlations.map((correlation, index) => (
@@ -990,7 +990,7 @@ const HealthTracker = () => {
                       <div className="w-10 h-10 rounded-xl bg-primary/10 border border-primary/30 flex items-center justify-center">
                         <CheckCircle className="w-5 h-5 text-primary" />
                       </div>
-                      <h3 className="font-serif text-lg font-semibold">Recommendations</h3>
+                      <h3 className="font-serif text-lg font-semibold">Talooyinka</h3>
                     </div>
                     <div className="space-y-3">
                       {aiAnalysis.recommendations.map((rec, index) => (
