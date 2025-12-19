@@ -46,33 +46,55 @@ serve(async (req) => {
             content: [
               {
                 type: 'text',
-                text: `Sawirkan weji ku falanqee oo si faahfaahsan u bixi qiimayn.
+                text: `You are a professional dermatologist AI. Analyze this face image carefully and provide a detailed skin assessment.
 
-MUHIIM: Waa inaad si sax ah u eegta sawirka oo aad bixisaa qiimayn dhabta ah oo ku salaysan waxa aad aragto. Ha isticmaalin tirooyinka caadiga ah.
+CRITICAL: You MUST analyze the actual image provided. Look at:
+- Visible shine/oiliness on forehead, nose, chin (T-zone)
+- Dry patches, flakiness, or rough texture
+- Pore size and visibility
+- Skin texture and tone
+- Any acne, blemishes, or spots
+- Under-eye area condition
+- Fine lines or wrinkles
 
-Ku bixi JSON object keliya (aan wax markdown ah lahayn) leh:
-1. skinHealth object leh:
-   - qoyaan (0-100): Heerka qoyaanka maqaarka
-   - nadiifnimo (0-100): Sida nadiifsan ee maqaarka
-   - dhadhanka (0-100): Dhadhanka maqaarka
-   - acne (0-100): Heerar finfinow (100 = ma jiro, 0 = badan)
-   - wrinkles (0-100): Jiiqid (100 = ma jiro, 0 = badan)
-   - darkCircles (0-100): Gariir madow (100 = ma jiro, 0 = badan)
+Respond with ONLY a JSON object (no markdown, no code blocks) with this exact structure:
 
-2. talooyinka: array ah 6-8 talo GAAR AH oo daryeelka maqaarka ah oo ku salaysan waxyaalaha la arkay. 
-   MUHIIM: Talooyinku waa inay si toos ah ugu xiran yihiin heerarka aad heshay:
-   - Haddii qoyaanku hooseeyo 70, bixi talooyinka xoojinta qoyaanka
-   - Haddii finfinowgu hooseeyo 80, bixi talooyinka finfinowga ka hortagga
-   - Haddii jiiqidku hooseeyo 85, bixi talooyinka anti-aging
-   - Haddii gariir madowgu hooseeyo 80, bixi talooyinka indhaha daryeelka
-   Talooyinku ha noqdaan kuwo gaar ah oo ku salaysan dhibaatooyinka la arkay, maaha talooyinka guud.
+{
+  "skinHealth": {
+    "qoyaan": <0-100 hydration level based on visible moisture>,
+    "nadiifnimo": <0-100 cleanliness/clarity>,
+    "dhadhanka": <0-100 skin texture smoothness>,
+    "acne": <0-100 where 100=no acne, 0=severe acne>,
+    "wrinkles": <0-100 where 100=no wrinkles, 0=many wrinkles>,
+    "darkCircles": <0-100 where 100=no dark circles, 0=severe dark circles>
+  },
+  "skinType": {
+    "type": "<EXACT: 'oily' OR 'dry' OR 'combination' OR 'normal'>",
+    "confidence": <50-100 how confident you are>,
+    "indicators": ["<list 2-4 specific visual signs you detected>"],
+    "tZone": "<describe T-zone condition: oily/normal/dry>",
+    "cheeks": "<describe cheek area condition: oily/normal/dry>"
+  },
+  "talooyinka": [
+    "<6-8 specific skincare recommendations in Somali based on detected skin type>",
+    "<If oily: recommend oil-control, clay masks, lightweight moisturizers>",
+    "<If dry: recommend hydrating serums, rich moisturizers, avoid harsh cleansers>",
+    "<If combination: recommend zone-specific care>"
+  ],
+  "features": {
+    "midabMaqaarka": "<skin tone and undertone description in Somali>",
+    "daQiyaas": <estimated age number>,
+    "nooMaqaarka": "<skin type in Somali: Maqaar saliid leh (oily) / Maqaar qallalan (dry) / Maqaar isku dhafan (combination) / Maqaar caadi ah (normal)>"
+  },
+  "detailedAnalysis": {
+    "oilLevel": "<none/mild/moderate/high - describe visible shine>",
+    "dryness": "<none/mild/moderate/severe - describe dry patches>",
+    "poreSize": "<small/medium/large/enlarged>",
+    "overallCondition": "<2-3 sentence summary of skin condition in Somali>"
+  }
+}
 
-3. features object leh: 
-   - midabMaqaarka (sharaxaad): Midabka maqaarka iyo simaanta
-   - daQiyaas (nambar): Da'da qiyaasta ah
-   - nooMaqaarka (text): Nooca maqaarka (qalalan, engegan, isku dhafan)
-
-Noqo daacad, gaar ah, oo si faahfaahsan u sharax waxaad aragtay. Diirada saar caafimaadka maqaarka. Dhammaan jawaabta ku qor Af-Soomaali.`
+Be honest and specific. Your analysis must match what you actually see in the image.`
               },
               {
                 type: 'image_url',
