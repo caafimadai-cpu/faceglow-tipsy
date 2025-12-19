@@ -23,7 +23,12 @@ import {
   Zap,
   Activity,
   Scale,
-  Clock
+  Clock,
+  Brain,
+  TrendingUp,
+  AlertTriangle,
+  CheckCircle,
+  Loader2
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -61,6 +66,20 @@ interface BodyHealthLog {
   exercise_type: string | null;
   water_glasses: number | null;
   notes: string | null;
+}
+
+interface AIInsight {
+  title: string;
+  description: string;
+  type: 'positive' | 'warning' | 'neutral';
+  icon: string;
+}
+
+interface AIAnalysis {
+  summary: string;
+  insights: AIInsight[];
+  recommendations: string[];
+  correlations: string[];
 }
 
 const commonVitamins = [
@@ -105,6 +124,10 @@ const HealthTracker = () => {
     water_glasses: 8,
     notes: ''
   });
+
+  // AI Insights states
+  const [aiAnalysis, setAiAnalysis] = useState<AIAnalysis | null>(null);
+  const [loadingInsights, setLoadingInsights] = useState(false);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -262,6 +285,57 @@ const HealthTracker = () => {
     return 'text-rose-400';
   };
 
+  const fetchAIInsights = async () => {
+    if (!user) return;
+    setLoadingInsights(true);
+
+    try {
+      const response = await fetch(
+        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/analyze-health`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+          },
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error('Failed to analyze health data');
+      }
+
+      const data = await response.json();
+      setAiAnalysis(data);
+      toast({ title: 'Analysis Complete', description: 'Your health insights are ready!' });
+    } catch (error) {
+      toast({ title: 'Error', description: 'Failed to analyze health data', variant: 'destructive' });
+    } finally {
+      setLoadingInsights(false);
+    }
+  };
+
+  const getInsightIcon = (iconType: string) => {
+    switch (iconType) {
+      case 'vitamin': return Pill;
+      case 'gut': return Apple;
+      case 'sleep': return Moon;
+      case 'energy': return Zap;
+      case 'water': return Droplets;
+      case 'exercise': return Activity;
+      case 'stress': return AlertTriangle;
+      default: return Brain;
+    }
+  };
+
+  const getInsightColor = (type: string) => {
+    switch (type) {
+      case 'positive': return 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400';
+      case 'warning': return 'bg-amber-500/10 border-amber-500/30 text-amber-400';
+      default: return 'bg-primary/10 border-primary/30 text-primary';
+    }
+  };
+
   return (
     <div className="min-h-screen grain">
       <div className="hero-glow w-[500px] h-[500px] -top-[250px] left-1/2 -translate-x-1/2" />
@@ -294,18 +368,22 @@ const HealthTracker = () => {
         </div>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="grid grid-cols-3 w-full max-w-lg mx-auto bg-secondary/50 border border-border/50 p-1 rounded-2xl">
+          <TabsList className="grid grid-cols-4 w-full max-w-xl mx-auto bg-secondary/50 border border-border/50 p-1 rounded-2xl">
             <TabsTrigger value="vitamins" className="gap-2 rounded-xl data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
               <Pill className="w-4 h-4" />
               <span className="hidden sm:inline">Vitamins</span>
             </TabsTrigger>
             <TabsTrigger value="gut" className="gap-2 rounded-xl data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
               <Apple className="w-4 h-4" />
-              <span className="hidden sm:inline">Gut Health</span>
+              <span className="hidden sm:inline">Gut</span>
             </TabsTrigger>
             <TabsTrigger value="body" className="gap-2 rounded-xl data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
               <Activity className="w-4 h-4" />
-              <span className="hidden sm:inline">Body Health</span>
+              <span className="hidden sm:inline">Body</span>
+            </TabsTrigger>
+            <TabsTrigger value="insights" className="gap-2 rounded-xl data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+              <Brain className="w-4 h-4" />
+              <span className="hidden sm:inline">AI Insights</span>
             </TabsTrigger>
           </TabsList>
 
@@ -785,6 +863,148 @@ const HealthTracker = () => {
                   ))}
                 </div>
               </div>
+            )}
+          </TabsContent>
+
+          {/* AI Insights Tab */}
+          <TabsContent value="insights" className="space-y-6 animate-fadeIn">
+            <div className="analysis-card">
+              <div className="flex items-center justify-between mb-6">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-primary/10 border border-primary/30 flex items-center justify-center">
+                    <Brain className="w-5 h-5 text-primary" />
+                  </div>
+                  <div>
+                    <h3 className="font-serif text-lg font-semibold">AI Health Analysis</h3>
+                    <p className="text-xs text-muted-foreground">Powered by advanced AI</p>
+                  </div>
+                </div>
+                <Button onClick={fetchAIInsights} disabled={loadingInsights} className="gap-2">
+                  {loadingInsights ? (
+                    <>
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                      Analyzing...
+                    </>
+                  ) : (
+                    <>
+                      <Sparkles className="w-4 h-4" />
+                      Analyze My Data
+                    </>
+                  )}
+                </Button>
+              </div>
+
+              {!aiAnalysis && !loadingInsights && (
+                <div className="text-center py-12">
+                  <Brain className="w-16 h-16 mx-auto text-muted-foreground/30 mb-4" />
+                  <p className="text-muted-foreground mb-2">No analysis yet</p>
+                  <p className="text-sm text-muted-foreground/70">
+                    Click "Analyze My Data" to get AI-powered insights based on your tracked health data
+                  </p>
+                </div>
+              )}
+
+              {loadingInsights && (
+                <div className="text-center py-12">
+                  <div className="relative w-16 h-16 mx-auto mb-4">
+                    <div className="absolute inset-0 rounded-full border-2 border-primary/20" />
+                    <div className="absolute inset-0 rounded-full border-2 border-transparent border-t-primary animate-spin" />
+                    <Brain className="absolute inset-0 m-auto w-6 h-6 text-primary animate-pulse" />
+                  </div>
+                  <p className="text-muted-foreground">Analyzing your health patterns...</p>
+                  <p className="text-sm text-muted-foreground/70">This may take a few seconds</p>
+                </div>
+              )}
+            </div>
+
+            {aiAnalysis && (
+              <>
+                {/* Summary */}
+                <div className="analysis-card">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center">
+                      <TrendingUp className="w-5 h-5 text-emerald-400" />
+                    </div>
+                    <h3 className="font-serif text-lg font-semibold">Summary</h3>
+                  </div>
+                  <p className="text-muted-foreground leading-relaxed">{aiAnalysis.summary}</p>
+                </div>
+
+                {/* Insights */}
+                {aiAnalysis.insights && aiAnalysis.insights.length > 0 && (
+                  <div className="space-y-4">
+                    <h3 className="font-serif text-lg font-semibold">Key Insights</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {aiAnalysis.insights.map((insight, index) => {
+                        const Icon = getInsightIcon(insight.icon);
+                        return (
+                          <div
+                            key={index}
+                            className={cn(
+                              "p-4 rounded-xl border",
+                              getInsightColor(insight.type)
+                            )}
+                          >
+                            <div className="flex items-start gap-3">
+                              <div className="w-8 h-8 rounded-lg bg-background/50 flex items-center justify-center flex-shrink-0">
+                                <Icon className="w-4 h-4" />
+                              </div>
+                              <div>
+                                <h4 className="font-medium mb-1">{insight.title}</h4>
+                                <p className="text-sm opacity-80">{insight.description}</p>
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
+
+                {/* Correlations */}
+                {aiAnalysis.correlations && aiAnalysis.correlations.length > 0 && (
+                  <div className="analysis-card">
+                    <div className="flex items-center gap-3 mb-4">
+                      <div className="w-10 h-10 rounded-xl bg-purple-500/10 border border-purple-500/30 flex items-center justify-center">
+                        <Activity className="w-5 h-5 text-purple-400" />
+                      </div>
+                      <h3 className="font-serif text-lg font-semibold">Pattern Correlations</h3>
+                    </div>
+                    <div className="space-y-2">
+                      {aiAnalysis.correlations.map((correlation, index) => (
+                        <div key={index} className="flex items-start gap-3 p-3 rounded-lg bg-secondary/30">
+                          <span className="w-6 h-6 rounded-full bg-purple-500/20 text-purple-400 flex items-center justify-center text-xs font-medium flex-shrink-0">
+                            {index + 1}
+                          </span>
+                          <p className="text-sm">{correlation}</p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Recommendations */}
+                {aiAnalysis.recommendations && aiAnalysis.recommendations.length > 0 && (
+                  <div className="analysis-card">
+                    <div className="flex items-center gap-3 mb-4">
+                      <div className="w-10 h-10 rounded-xl bg-primary/10 border border-primary/30 flex items-center justify-center">
+                        <CheckCircle className="w-5 h-5 text-primary" />
+                      </div>
+                      <h3 className="font-serif text-lg font-semibold">Recommendations</h3>
+                    </div>
+                    <div className="space-y-3">
+                      {aiAnalysis.recommendations.map((rec, index) => (
+                        <div key={index} className="flex items-start gap-3 p-3 rounded-xl bg-secondary/30 hover:bg-secondary/50 transition-colors">
+                          <span className="w-6 h-6 rounded-full bg-primary/20 text-primary flex items-center justify-center text-xs font-medium flex-shrink-0">
+                            {index + 1}
+                          </span>
+                          <p className="text-sm">{rec}</p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </>
             )}
           </TabsContent>
         </Tabs>
