@@ -29,9 +29,11 @@ import {
   AlertTriangle,
   CheckCircle,
   Loader2,
-  Bell
+  Bell,
+  Target
 } from 'lucide-react';
 import { HealthReminders } from '@/components/HealthReminders';
+import { HealthGoals } from '@/components/HealthGoals';
 import { cn } from '@/lib/utils';
 
 interface VitaminLog {
@@ -370,7 +372,7 @@ const HealthTracker = () => {
         </div>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="grid grid-cols-5 w-full max-w-2xl mx-auto bg-secondary/50 border border-border/50 p-1 rounded-2xl">
+          <TabsList className="grid grid-cols-6 w-full max-w-3xl mx-auto bg-secondary/50 border border-border/50 p-1 rounded-2xl">
             <TabsTrigger value="vitamins" className="gap-2 rounded-xl data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
               <Pill className="w-4 h-4" />
               <span className="hidden sm:inline">Vitamins</span>
@@ -382,6 +384,10 @@ const HealthTracker = () => {
             <TabsTrigger value="body" className="gap-2 rounded-xl data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
               <Activity className="w-4 h-4" />
               <span className="hidden sm:inline">Body</span>
+            </TabsTrigger>
+            <TabsTrigger value="goals" className="gap-2 rounded-xl data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+              <Target className="w-4 h-4" />
+              <span className="hidden sm:inline">Goals</span>
             </TabsTrigger>
             <TabsTrigger value="reminders" className="gap-2 rounded-xl data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
               <Bell className="w-4 h-4" />
@@ -870,6 +876,11 @@ const HealthTracker = () => {
                 </div>
               </div>
             )}
+          </TabsContent>
+
+          {/* Goals Tab */}
+          <TabsContent value="goals" className="space-y-6 animate-fadeIn">
+            <HealthGoals user={user} />
           </TabsContent>
 
           {/* Reminders Tab */}
