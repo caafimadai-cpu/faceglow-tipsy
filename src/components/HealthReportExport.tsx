@@ -34,18 +34,11 @@ export const HealthReportExport: React.FC<HealthReportExportProps> = ({ userId }
       // Get AI analysis
       let aiAnalysis = null;
       try {
-        const response = await fetch(
-          `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/analyze-health`,
-          {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
-            },
-          }
-        );
-        if (response.ok) {
-          aiAnalysis = await response.json();
+        const { data, error } = await supabase.functions.invoke('analyze-health', {
+          method: 'POST',
+        });
+        if (!error && data) {
+          aiAnalysis = data;
         }
       } catch (e) {
         console.error('AI analysis failed:', e);
