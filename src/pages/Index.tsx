@@ -54,6 +54,9 @@ const analyzeImage = async (file: File) => {
     acne: result.skinHealth?.acne,
     wrinkles: result.skinHealth?.wrinkles,
     darkCircles: result.skinHealth?.darkCircles,
+    skinType: result.skinType || null,
+    detailedAnalysis: result.detailedAnalysis || null,
+    features: result.features || null,
     concerns: result.walaacyo || [],
     recommendations: result.talooyinka || result.recommendations || []
   };
