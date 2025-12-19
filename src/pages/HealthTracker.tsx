@@ -34,6 +34,7 @@ import {
 } from 'lucide-react';
 import { HealthReminders } from '@/components/HealthReminders';
 import { HealthGoals } from '@/components/HealthGoals';
+import { HealthReportExport } from '@/components/HealthReportExport';
 import { cn } from '@/lib/utils';
 
 interface VitaminLog {
@@ -357,7 +358,7 @@ const HealthTracker = () => {
             </div>
             <span className="font-serif text-lg font-semibold">Health Tracker</span>
           </div>
-          <div className="w-20" />
+          {user && <HealthReportExport userId={user.id} />}
         </div>
       </header>
 
