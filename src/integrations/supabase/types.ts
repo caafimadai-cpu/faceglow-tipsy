@@ -53,6 +53,60 @@ export type Database = {
         }
         Relationships: []
       }
+      body_health_logs: {
+        Row: {
+          bmi: number | null
+          created_at: string
+          date: string
+          energy_level: number | null
+          exercise_minutes: number | null
+          exercise_type: string | null
+          height_cm: number | null
+          id: string
+          notes: string | null
+          sleep_hours: number | null
+          sleep_quality: number | null
+          stress_level: number | null
+          user_id: string
+          water_glasses: number | null
+          weight_kg: number | null
+        }
+        Insert: {
+          bmi?: number | null
+          created_at?: string
+          date?: string
+          energy_level?: number | null
+          exercise_minutes?: number | null
+          exercise_type?: string | null
+          height_cm?: number | null
+          id?: string
+          notes?: string | null
+          sleep_hours?: number | null
+          sleep_quality?: number | null
+          stress_level?: number | null
+          user_id: string
+          water_glasses?: number | null
+          weight_kg?: number | null
+        }
+        Update: {
+          bmi?: number | null
+          created_at?: string
+          date?: string
+          energy_level?: number | null
+          exercise_minutes?: number | null
+          exercise_type?: string | null
+          height_cm?: number | null
+          id?: string
+          notes?: string | null
+          sleep_hours?: number | null
+          sleep_quality?: number | null
+          stress_level?: number | null
+          user_id?: string
+          water_glasses?: number | null
+          weight_kg?: number | null
+        }
+        Relationships: []
+      }
       communities: {
         Row: {
           created_at: string
@@ -118,6 +172,48 @@ export type Database = {
           },
         ]
       }
+      gut_health_logs: {
+        Row: {
+          bloating_level: number | null
+          bowel_regularity: string | null
+          created_at: string
+          date: string
+          digestion_score: number | null
+          fiber_intake: string | null
+          id: string
+          notes: string | null
+          probiotic_taken: boolean | null
+          user_id: string
+          water_intake_liters: number | null
+        }
+        Insert: {
+          bloating_level?: number | null
+          bowel_regularity?: string | null
+          created_at?: string
+          date?: string
+          digestion_score?: number | null
+          fiber_intake?: string | null
+          id?: string
+          notes?: string | null
+          probiotic_taken?: boolean | null
+          user_id: string
+          water_intake_liters?: number | null
+        }
+        Update: {
+          bloating_level?: number | null
+          bowel_regularity?: string | null
+          created_at?: string
+          date?: string
+          digestion_score?: number | null
+          fiber_intake?: string | null
+          id?: string
+          notes?: string | null
+          probiotic_taken?: boolean | null
+          user_id?: string
+          water_intake_liters?: number | null
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -172,6 +268,36 @@ export type Database = {
           updated_at?: string
           upload_count?: number
           user_id?: string
+        }
+        Relationships: []
+      }
+      vitamin_logs: {
+        Row: {
+          created_at: string
+          dosage: string | null
+          id: string
+          notes: string | null
+          taken_at: string
+          user_id: string
+          vitamin_name: string
+        }
+        Insert: {
+          created_at?: string
+          dosage?: string | null
+          id?: string
+          notes?: string | null
+          taken_at?: string
+          user_id: string
+          vitamin_name: string
+        }
+        Update: {
+          created_at?: string
+          dosage?: string | null
+          id?: string
+          notes?: string | null
+          taken_at?: string
+          user_id?: string
+          vitamin_name?: string
         }
         Relationships: []
       }

@@ -3,7 +3,7 @@ import { ImageUpload } from '@/components/ImageUpload';
 import { AnalysisResult } from '@/components/AnalysisResult';
 import { AdSlot } from '@/components/AdSlot';
 import { useToast } from '@/components/ui/use-toast';
-import { Loader2, Users, LogOut, Globe, Sparkles, ArrowRight, Scan, Shield, Zap } from 'lucide-react';
+import { Loader2, Users, LogOut, Globe, Sparkles, ArrowRight, Scan, Shield, Zap, Heart } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
@@ -263,6 +263,15 @@ const Index = () => {
                 className="rounded-xl hover:bg-secondary"
               >
                 <Globe className="w-4 h-4" />
+              </Button>
+              
+              <Button 
+                onClick={() => navigate('/health-tracker')}
+                variant="ghost"
+                className="hidden sm:flex gap-2 rounded-xl hover:bg-secondary"
+              >
+                <Heart className="w-4 h-4" />
+                Health
               </Button>
               
               <Button 

@@ -7,6 +7,7 @@ import Index from "./pages/Index";
 import Community from "./pages/Community";
 import Auth from "./pages/Auth";
 import AdManager from "./pages/AdManager";
+import HealthTracker from "./pages/HealthTracker";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -22,6 +23,7 @@ const App = () => (
           <Route path="/community" element={<Community />} />
           <Route path="/auth" element={<Auth />} />
           <Route path="/ad-manager" element={<AdManager />} />
+          <Route path="/health-tracker" element={<HealthTracker />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
