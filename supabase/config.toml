@@ -5,3 +5,6 @@ verify_jwt = false
 
 [functions.hormuud-payment]
 verify_jwt = false
+
+[functions.analyze-health]
+verify_jwt = false
