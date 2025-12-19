@@ -214,6 +214,39 @@ export type Database = {
         }
         Relationships: []
       }
+      health_reminders: {
+        Row: {
+          created_at: string
+          days_of_week: number[] | null
+          id: string
+          is_enabled: boolean
+          reminder_time: string
+          reminder_type: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          days_of_week?: number[] | null
+          id?: string
+          is_enabled?: boolean
+          reminder_time: string
+          reminder_type: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          days_of_week?: number[] | null
+          id?: string
+          is_enabled?: boolean
+          reminder_time?: string
+          reminder_type?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null

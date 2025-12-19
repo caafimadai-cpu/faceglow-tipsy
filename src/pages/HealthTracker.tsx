@@ -28,8 +28,10 @@ import {
   TrendingUp,
   AlertTriangle,
   CheckCircle,
-  Loader2
+  Loader2,
+  Bell
 } from 'lucide-react';
+import { HealthReminders } from '@/components/HealthReminders';
 import { cn } from '@/lib/utils';
 
 interface VitaminLog {
@@ -368,7 +370,7 @@ const HealthTracker = () => {
         </div>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="grid grid-cols-4 w-full max-w-xl mx-auto bg-secondary/50 border border-border/50 p-1 rounded-2xl">
+          <TabsList className="grid grid-cols-5 w-full max-w-2xl mx-auto bg-secondary/50 border border-border/50 p-1 rounded-2xl">
             <TabsTrigger value="vitamins" className="gap-2 rounded-xl data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
               <Pill className="w-4 h-4" />
               <span className="hidden sm:inline">Vitamins</span>
@@ -381,9 +383,13 @@ const HealthTracker = () => {
               <Activity className="w-4 h-4" />
               <span className="hidden sm:inline">Body</span>
             </TabsTrigger>
+            <TabsTrigger value="reminders" className="gap-2 rounded-xl data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+              <Bell className="w-4 h-4" />
+              <span className="hidden sm:inline">Reminders</span>
+            </TabsTrigger>
             <TabsTrigger value="insights" className="gap-2 rounded-xl data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
               <Brain className="w-4 h-4" />
-              <span className="hidden sm:inline">AI Insights</span>
+              <span className="hidden sm:inline">AI</span>
             </TabsTrigger>
           </TabsList>
 
@@ -864,6 +870,11 @@ const HealthTracker = () => {
                 </div>
               </div>
             )}
+          </TabsContent>
+
+          {/* Reminders Tab */}
+          <TabsContent value="reminders" className="space-y-6 animate-fadeIn">
+            <HealthReminders user={user} />
           </TabsContent>
 
           {/* AI Insights Tab */}
