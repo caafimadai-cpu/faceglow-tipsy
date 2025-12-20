@@ -2,7 +2,6 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { ArrowLeft, Dumbbell, Heart, Zap, Target, Timer, Flame } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 
@@ -16,6 +15,8 @@ interface Exercise {
   duration: string;
   calories: number;
   instructions: string[];
+  imageUrl: string;
+  gifUrl?: string;
 }
 
 const exercises: Exercise[] = [
@@ -34,6 +35,7 @@ const exercises: Exercise[] = [
       "Hoos u dhig ilaa laabta ay dhulka taabato",
       "Kor u riix",
     ],
+    imageUrl: "https://media.giphy.com/media/Kajbn3MgRxVPa/giphy.gif",
   },
   {
     id: "squats",
@@ -50,6 +52,7 @@ const exercises: Exercise[] = [
       "Hoos u fadhiiso sida kursiga",
       "Kor u kac si tartiib ah",
     ],
+    imageUrl: "https://media.giphy.com/media/1qfKN8Dt0CRdCRxz9q/giphy.gif",
   },
   {
     id: "lunges",
@@ -66,6 +69,7 @@ const exercises: Exercise[] = [
       "Dhabarka toosi",
       "U beddel lugaha",
     ],
+    imageUrl: "https://media.giphy.com/media/l0HlNQ03J5JxX6OBy/giphy.gif",
   },
   {
     id: "plank",
@@ -82,6 +86,7 @@ const exercises: Exercise[] = [
       "Calooshaweyn adag hay",
       "U hay 30-60 ilbiriqsi",
     ],
+    imageUrl: "https://media.giphy.com/media/xT8qBff8cRRFf7k2u4/giphy.gif",
   },
   {
     id: "burpees",
@@ -99,6 +104,7 @@ const exercises: Exercise[] = [
       "Riix-kordhinta samee",
       "Cagaha soo cel oo kor u bood",
     ],
+    imageUrl: "https://media.giphy.com/media/23hPPMRgPxbNBlPQe3/giphy.gif",
   },
   {
     id: "jumping-jacks",
@@ -115,6 +121,7 @@ const exercises: Exercise[] = [
       "Isku mar gacmaha kor u qaad",
       "Ku soo laabo qaabka hore",
     ],
+    imageUrl: "https://media.giphy.com/media/l0HlRFpFpRzpPKVoc/giphy.gif",
   },
   {
     id: "mountain-climbers",
@@ -131,6 +138,7 @@ const exercises: Exercise[] = [
       "Lugaha si degdeg ah u beddel",
       "Dhabarka sida loox u hay",
     ],
+    imageUrl: "https://media.giphy.com/media/bReZVG0k9hM5q/giphy.gif",
   },
   {
     id: "deadlift",
@@ -147,6 +155,7 @@ const exercises: Exercise[] = [
       "Miisaanka kor u qaad",
       "Toosi oo hoos u dhig si tartiib ah",
     ],
+    imageUrl: "https://media.giphy.com/media/1qfKN8Dt0CRdCRxz9q/giphy.gif",
   },
   {
     id: "bicep-curls",
@@ -163,6 +172,7 @@ const exercises: Exercise[] = [
       "Culusowga garbaha u qaad",
       "Si tartiib ah hoos u dhig",
     ],
+    imageUrl: "https://media.giphy.com/media/7YCC7gFhkiPvBfy2BB/giphy.gif",
   },
   {
     id: "crunches",
@@ -179,6 +189,7 @@ const exercises: Exercise[] = [
       "Gacmaha madaxa dab saaro",
       "Garbaha dhulka ka kor u qaad",
     ],
+    imageUrl: "https://media.giphy.com/media/7YCC7gFhkiPvBfy2BB/giphy.gif",
   },
   {
     id: "leg-raises",
@@ -195,6 +206,7 @@ const exercises: Exercise[] = [
       "Lugaha kor u qaad ilaa 90°",
       "Si tartiib ah hoos u dhig",
     ],
+    imageUrl: "https://media.giphy.com/media/3o7qDQ5iw1oXyDeJAk/giphy.gif",
   },
   {
     id: "russian-twist",
@@ -211,6 +223,7 @@ const exercises: Exercise[] = [
       "Gacmahaaga isku wada dhig",
       "Dhinac ilaa dhinac u maroorsi",
     ],
+    imageUrl: "https://media.giphy.com/media/5t9IcXiBCyw60XPpGu/giphy.gif",
   },
 ];
 
@@ -235,231 +248,21 @@ const getDifficultyColor = (difficulty: string) => {
   }
 };
 
-const ExerciseIllustration = ({ exerciseId, gender }: { exerciseId: string; gender: "male" | "female" }) => {
-  const getIllustration = () => {
-    const baseColor = gender === "male" ? "#3b82f6" : "#ec4899";
-    const skinColor = gender === "male" ? "#d4a574" : "#e8c4a0";
-    const clothingColor = gender === "male" ? "#1e40af" : "#be185d";
-    
-    switch (exerciseId) {
-      case "pushups":
-        return (
-          <svg viewBox="0 0 200 120" className="w-full h-full">
-            <ellipse cx="100" cy="115" rx="80" ry="5" fill="hsl(var(--muted))" opacity="0.3" />
-            {/* Body in push-up position */}
-            <ellipse cx="60" cy="80" rx="15" ry="12" fill={skinColor} /> {/* Head */}
-            <rect x="70" y="85" width="80" height="12" rx="6" fill={clothingColor} /> {/* Body */}
-            <rect x="145" y="90" width="30" height="8" rx="4" fill={clothingColor} /> {/* Legs */}
-            <line x1="55" y1="95" x2="55" y2="112" stroke={skinColor} strokeWidth="6" strokeLinecap="round" /> {/* Arm */}
-            <line x1="85" y1="95" x2="85" y2="112" stroke={skinColor} strokeWidth="6" strokeLinecap="round" /> {/* Arm */}
-            <circle cx="55" cy="112" r="4" fill={skinColor} /> {/* Hand */}
-            <circle cx="85" cy="112" r="4" fill={skinColor} /> {/* Hand */}
-          </svg>
-        );
-      case "squats":
-        return (
-          <svg viewBox="0 0 200 120" className="w-full h-full">
-            <ellipse cx="100" cy="115" rx="40" ry="5" fill="hsl(var(--muted))" opacity="0.3" />
-            {/* Person in squat position */}
-            <circle cx="100" cy="25" r="15" fill={skinColor} /> {/* Head */}
-            <rect x="85" y="38" width="30" height="35" rx="8" fill={clothingColor} /> {/* Torso */}
-            <path d="M85 70 Q70 85 75 100 L85 100 Q90 85 95 75" fill={clothingColor} /> {/* Left leg */}
-            <path d="M115 70 Q130 85 125 100 L115 100 Q110 85 105 75" fill={clothingColor} /> {/* Right leg */}
-            <rect x="72" y="98" width="18" height="8" rx="3" fill={skinColor} /> {/* Left foot */}
-            <rect x="110" y="98" width="18" height="8" rx="3" fill={skinColor} /> {/* Right foot */}
-            <line x1="88" y1="50" x2="70" y2="60" stroke={skinColor} strokeWidth="6" strokeLinecap="round" /> {/* Left arm */}
-            <line x1="112" y1="50" x2="130" y2="60" stroke={skinColor} strokeWidth="6" strokeLinecap="round" /> {/* Right arm */}
-          </svg>
-        );
-      case "lunges":
-        return (
-          <svg viewBox="0 0 200 120" className="w-full h-full">
-            <ellipse cx="100" cy="115" rx="60" ry="5" fill="hsl(var(--muted))" opacity="0.3" />
-            {/* Person in lunge position */}
-            <circle cx="80" cy="20" r="14" fill={skinColor} /> {/* Head */}
-            <rect x="68" y="32" width="24" height="40" rx="6" fill={clothingColor} /> {/* Torso */}
-            <path d="M75 70 L60 100 L75 100 L85 75" fill={clothingColor} /> {/* Front leg bent */}
-            <path d="M85 70 L140 95 L145 105 L135 105 L90 75" fill={clothingColor} /> {/* Back leg extended */}
-            <rect x="55" y="98" width="22" height="8" rx="3" fill={skinColor} /> {/* Front foot */}
-            <rect x="138" y="100" width="15" height="6" rx="2" fill={skinColor} /> {/* Back foot */}
-          </svg>
-        );
-      case "plank":
-        return (
-          <svg viewBox="0 0 200 120" className="w-full h-full">
-            <ellipse cx="100" cy="115" rx="80" ry="5" fill="hsl(var(--muted))" opacity="0.3" />
-            {/* Body in plank position */}
-            <circle cx="40" cy="70" r="12" fill={skinColor} /> {/* Head */}
-            <rect x="50" y="75" width="90" height="14" rx="7" fill={clothingColor} /> {/* Body */}
-            <rect x="135" y="80" width="40" height="10" rx="5" fill={clothingColor} /> {/* Legs */}
-            <line x1="55" y1="88" x2="55" y2="112" stroke={skinColor} strokeWidth="6" strokeLinecap="round" /> {/* Left arm */}
-            <line x1="75" y1="88" x2="75" y2="112" stroke={skinColor} strokeWidth="6" strokeLinecap="round" /> {/* Right arm */}
-            <circle cx="55" cy="112" r="4" fill={skinColor} />
-            <circle cx="75" cy="112" r="4" fill={skinColor} />
-            <rect x="170" y="105" width="12" height="6" rx="2" fill={skinColor} /> {/* Feet */}
-          </svg>
-        );
-      case "burpees":
-        return (
-          <svg viewBox="0 0 200 120" className="w-full h-full">
-            <ellipse cx="100" cy="115" rx="40" ry="5" fill="hsl(var(--muted))" opacity="0.3" />
-            {/* Person jumping with arms up */}
-            <circle cx="100" cy="20" r="14" fill={skinColor} /> {/* Head */}
-            <rect x="88" y="32" width="24" height="35" rx="6" fill={clothingColor} /> {/* Torso */}
-            <line x1="92" y1="38" x2="75" y2="10" stroke={skinColor} strokeWidth="6" strokeLinecap="round" /> {/* Left arm up */}
-            <line x1="108" y1="38" x2="125" y2="10" stroke={skinColor} strokeWidth="6" strokeLinecap="round" /> {/* Right arm up */}
-            <path d="M90 65 L85 95 L95 95 L98 68" fill={clothingColor} /> {/* Left leg */}
-            <path d="M110 65 L115 95 L105 95 L102 68" fill={clothingColor} /> {/* Right leg */}
-            <rect x="82" y="93" width="15" height="7" rx="2" fill={skinColor} /> {/* Left foot */}
-            <rect x="103" y="93" width="15" height="7" rx="2" fill={skinColor} /> {/* Right foot */}
-            {/* Jump lines */}
-            <path d="M70 100 L65 110" stroke={baseColor} strokeWidth="2" strokeDasharray="3" opacity="0.5" />
-            <path d="M130 100 L135 110" stroke={baseColor} strokeWidth="2" strokeDasharray="3" opacity="0.5" />
-          </svg>
-        );
-      case "jumping-jacks":
-        return (
-          <svg viewBox="0 0 200 120" className="w-full h-full">
-            <ellipse cx="100" cy="115" rx="50" ry="5" fill="hsl(var(--muted))" opacity="0.3" />
-            {/* Person with arms and legs spread */}
-            <circle cx="100" cy="18" r="14" fill={skinColor} /> {/* Head */}
-            <rect x="88" y="30" width="24" height="35" rx="6" fill={clothingColor} /> {/* Torso */}
-            <line x1="92" y1="38" x2="55" y2="20" stroke={skinColor} strokeWidth="6" strokeLinecap="round" /> {/* Left arm */}
-            <line x1="108" y1="38" x2="145" y2="20" stroke={skinColor} strokeWidth="6" strokeLinecap="round" /> {/* Right arm */}
-            <path d="M92 63 L65 105" stroke={clothingColor} strokeWidth="12" strokeLinecap="round" /> {/* Left leg */}
-            <path d="M108 63 L135 105" stroke={clothingColor} strokeWidth="12" strokeLinecap="round" /> {/* Right leg */}
-            <circle cx="55" cy="20" r="5" fill={skinColor} />
-            <circle cx="145" cy="20" r="5" fill={skinColor} />
-            <rect x="58" y="102" width="15" height="7" rx="2" fill={skinColor} />
-            <rect x="128" y="102" width="15" height="7" rx="2" fill={skinColor} />
-          </svg>
-        );
-      case "mountain-climbers":
-        return (
-          <svg viewBox="0 0 200 120" className="w-full h-full">
-            <ellipse cx="100" cy="115" rx="80" ry="5" fill="hsl(var(--muted))" opacity="0.3" />
-            {/* Person in mountain climber position */}
-            <circle cx="45" cy="55" r="12" fill={skinColor} /> {/* Head */}
-            <rect x="55" y="58" width="70" height="14" rx="7" fill={clothingColor} /> {/* Torso angled */}
-            <path d="M70 70 L55 100 L70 100 L80 75" fill={clothingColor} /> {/* Bent leg forward */}
-            <path d="M120 68 L165 90 L168 100 L155 100 L125 72" fill={clothingColor} /> {/* Extended leg back */}
-            <line x1="55" y1="70" x2="40" y2="105" stroke={skinColor} strokeWidth="6" strokeLinecap="round" /> {/* Left arm */}
-            <line x1="70" y1="70" x2="60" y2="105" stroke={skinColor} strokeWidth="6" strokeLinecap="round" /> {/* Right arm */}
-            <circle cx="40" cy="108" r="4" fill={skinColor} />
-            <circle cx="60" cy="108" r="4" fill={skinColor} />
-          </svg>
-        );
-      case "deadlift":
-        return (
-          <svg viewBox="0 0 200 120" className="w-full h-full">
-            <ellipse cx="100" cy="115" rx="50" ry="5" fill="hsl(var(--muted))" opacity="0.3" />
-            {/* Person lifting barbell */}
-            <circle cx="100" cy="20" r="14" fill={skinColor} /> {/* Head */}
-            <rect x="88" y="32" width="24" height="40" rx="6" fill={clothingColor} /> {/* Torso */}
-            <path d="M90 70 L85 100" stroke={clothingColor} strokeWidth="12" strokeLinecap="round" /> {/* Left leg */}
-            <path d="M110 70 L115 100" stroke={clothingColor} strokeWidth="12" strokeLinecap="round" /> {/* Right leg */}
-            <line x1="92" y1="45" x2="70" y2="70" stroke={skinColor} strokeWidth="6" strokeLinecap="round" /> {/* Left arm */}
-            <line x1="108" y1="45" x2="130" y2="70" stroke={skinColor} strokeWidth="6" strokeLinecap="round" /> {/* Right arm */}
-            {/* Barbell */}
-            <rect x="55" y="68" width="90" height="6" rx="3" fill="#6b7280" />
-            <rect x="50" y="62" width="12" height="18" rx="3" fill="#374151" />
-            <rect x="138" y="62" width="12" height="18" rx="3" fill="#374151" />
-            <rect x="78" y="102" width="15" height="7" rx="2" fill={skinColor} />
-            <rect x="108" y="102" width="15" height="7" rx="2" fill={skinColor} />
-          </svg>
-        );
-      case "bicep-curls":
-        return (
-          <svg viewBox="0 0 200 120" className="w-full h-full">
-            <ellipse cx="100" cy="115" rx="30" ry="5" fill="hsl(var(--muted))" opacity="0.3" />
-            {/* Person doing bicep curl */}
-            <circle cx="100" cy="18" r="14" fill={skinColor} /> {/* Head */}
-            <rect x="88" y="30" width="24" height="42" rx="6" fill={clothingColor} /> {/* Torso */}
-            <path d="M92 70 L90 100" stroke={clothingColor} strokeWidth="12" strokeLinecap="round" /> {/* Left leg */}
-            <path d="M108 70 L110 100" stroke={clothingColor} strokeWidth="12" strokeLinecap="round" /> {/* Right leg */}
-            {/* Left arm curled */}
-            <line x1="90" y1="40" x2="70" y2="55" stroke={skinColor} strokeWidth="6" strokeLinecap="round" />
-            <line x1="70" y1="55" x2="75" y2="35" stroke={skinColor} strokeWidth="6" strokeLinecap="round" />
-            {/* Right arm straight with dumbbell */}
-            <line x1="110" y1="40" x2="130" y2="70" stroke={skinColor} strokeWidth="6" strokeLinecap="round" />
-            {/* Dumbbells */}
-            <rect x="70" y="28" width="12" height="8" rx="2" fill="#6b7280" />
-            <rect x="125" y="68" width="12" height="8" rx="2" fill="#6b7280" />
-            <rect x="83" y="102" width="14" height="7" rx="2" fill={skinColor} />
-            <rect x="103" y="102" width="14" height="7" rx="2" fill={skinColor} />
-          </svg>
-        );
-      case "crunches":
-        return (
-          <svg viewBox="0 0 200 120" className="w-full h-full">
-            <ellipse cx="100" cy="108" rx="70" ry="5" fill="hsl(var(--muted))" opacity="0.3" />
-            {/* Person doing crunch */}
-            <circle cx="75" cy="50" r="12" fill={skinColor} /> {/* Head tilted up */}
-            <ellipse cx="100" cy="85" rx="35" ry="12" fill={clothingColor} /> {/* Body on ground */}
-            <path d="M75 60 Q90 70 95 80" fill={clothingColor} /> {/* Upper body lifting */}
-            <path d="M130 85 L150 65 L160 70 L145 95 Z" fill={clothingColor} /> {/* Bent legs */}
-            <path d="M145 90 L165 75 L170 80 L155 100 Z" fill={clothingColor} />
-            <line x1="72" y1="55" x2="85" y2="45" stroke={skinColor} strokeWidth="5" strokeLinecap="round" /> {/* Arms behind head */}
-            <line x1="78" y1="55" x2="90" y2="48" stroke={skinColor} strokeWidth="5" strokeLinecap="round" />
-            <rect x="158" y="68" width="12" height="7" rx="2" fill={skinColor} />
-            <rect x="165" y="75" width="12" height="7" rx="2" fill={skinColor} />
-          </svg>
-        );
-      case "leg-raises":
-        return (
-          <svg viewBox="0 0 200 120" className="w-full h-full">
-            <ellipse cx="100" cy="108" rx="70" ry="5" fill="hsl(var(--muted))" opacity="0.3" />
-            {/* Person doing leg raises */}
-            <circle cx="45" cy="90" r="12" fill={skinColor} /> {/* Head on ground */}
-            <rect x="55" y="85" width="50" height="14" rx="7" fill={clothingColor} /> {/* Upper body on ground */}
-            <path d="M100 88 L145 30" stroke={clothingColor} strokeWidth="14" strokeLinecap="round" /> {/* Legs raised */}
-            <line x1="50" y1="82" x2="35" y2="75" stroke={skinColor} strokeWidth="5" strokeLinecap="round" /> {/* Arms */}
-            <line x1="55" y1="82" x2="40" y2="70" stroke={skinColor} strokeWidth="5" strokeLinecap="round" />
-            <rect x="140" y="22" width="14" height="8" rx="2" fill={skinColor} /> {/* Feet at top */}
-          </svg>
-        );
-      case "russian-twist":
-        return (
-          <svg viewBox="0 0 200 120" className="w-full h-full">
-            <ellipse cx="100" cy="115" rx="50" ry="5" fill="hsl(var(--muted))" opacity="0.3" />
-            {/* Person in V-sit twisting position */}
-            <circle cx="85" cy="35" r="12" fill={skinColor} /> {/* Head */}
-            <rect x="80" y="45" width="22" height="30" rx="6" fill={clothingColor} transform="rotate(-15 90 60)" /> {/* Torso angled back */}
-            <path d="M95 73 L70 105 L85 105 L100 78" fill={clothingColor} /> {/* Left leg bent up */}
-            <path d="M105 73 L130 105 L115 105 L108 78" fill={clothingColor} /> {/* Right leg bent up */}
-            {/* Arms extended holding position - twisted to side */}
-            <line x1="88" y1="55" x2="55" y2="60" stroke={skinColor} strokeWidth="5" strokeLinecap="round" />
-            <line x1="95" y1="55" x2="60" y2="65" stroke={skinColor} strokeWidth="5" strokeLinecap="round" />
-            <circle cx="55" cy="62" r="4" fill={skinColor} />
-            <rect x="67" y="102" width="15" height="7" rx="2" fill={skinColor} />
-            <rect x="118" y="102" width="15" height="7" rx="2" fill={skinColor} />
-          </svg>
-        );
-      default:
-        return (
-          <svg viewBox="0 0 200 120" className="w-full h-full">
-            <ellipse cx="100" cy="115" rx="30" ry="5" fill="hsl(var(--muted))" opacity="0.3" />
-            <circle cx="100" cy="25" r="15" fill={skinColor} />
-            <rect x="88" y="38" width="24" height="40" rx="6" fill={clothingColor} />
-            <path d="M92 76 L88 105" stroke={clothingColor} strokeWidth="12" strokeLinecap="round" />
-            <path d="M108 76 L112 105" stroke={clothingColor} strokeWidth="12" strokeLinecap="round" />
-            <line x1="90" y1="45" x2="70" y2="65" stroke={skinColor} strokeWidth="6" strokeLinecap="round" />
-            <line x1="110" y1="45" x2="130" y2="65" stroke={skinColor} strokeWidth="6" strokeLinecap="round" />
-          </svg>
-        );
-    }
-  };
-
+const ExerciseImage = ({ imageUrl, name }: { imageUrl: string; name: string }) => {
   return (
-    <div className="w-full h-32 flex items-center justify-center">
-      {getIllustration()}
+    <div className="w-full h-40 flex items-center justify-center overflow-hidden rounded-t-lg">
+      <img 
+        src={imageUrl} 
+        alt={name}
+        className="w-full h-full object-cover"
+        loading="lazy"
+      />
     </div>
   );
 };
 
 const Workouts = () => {
   const [selectedCategory, setSelectedCategory] = useState("all");
-  const [gender, setGender] = useState<"male" | "female">("male");
 
   const filteredExercises = exercises.filter((exercise) => {
     if (selectedCategory === "all") return true;
@@ -490,19 +293,6 @@ const Workouts = () => {
       </header>
 
       <main className="container px-4 py-6 space-y-6">
-        {/* Gender Toggle */}
-        <div className="flex justify-center">
-          <Tabs value={gender} onValueChange={(v) => setGender(v as "male" | "female")} className="w-full max-w-xs">
-            <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="male" className="flex items-center gap-2">
-                <span className="text-blue-500">👨</span> Rag
-              </TabsTrigger>
-              <TabsTrigger value="female" className="flex items-center gap-2">
-                <span className="text-pink-500">👩</span> Dumar
-              </TabsTrigger>
-            </TabsList>
-          </Tabs>
-        </div>
 
         {/* Category Filter */}
         <div className="flex flex-wrap gap-2 justify-center">
@@ -540,9 +330,7 @@ const Workouts = () => {
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {filteredExercises.map((exercise) => (
             <Card key={exercise.id} className="overflow-hidden hover:shadow-lg transition-shadow">
-              <div className={`p-4 ${gender === "male" ? "bg-blue-500/10" : "bg-pink-500/10"}`}>
-                <ExerciseIllustration exerciseId={exercise.id} gender={gender} />
-              </div>
+              <ExerciseImage imageUrl={exercise.imageUrl} name={exercise.name} />
               <CardHeader className="pb-2">
                 <div className="flex items-start justify-between">
                   <div>
