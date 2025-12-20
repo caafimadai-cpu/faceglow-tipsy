@@ -606,7 +606,7 @@ const HealthTracker = () => {
 
                 {/* Bowel Regularity */}
                 <div className="space-y-2">
-                  <Label>Bowel Regularity</Label>
+                  <Label>Bowel Regularity (Saxnaanta Saxarada)</Label>
                   <div className="flex gap-2">
                     {['irregular', 'normal', 'regular'].map((status) => (
                       <button
