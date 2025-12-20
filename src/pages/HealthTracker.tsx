@@ -27,6 +27,7 @@ import {
   Brain,
   TrendingUp,
   BarChart3,
+  GitCompare,
   AlertTriangle,
   CheckCircle,
   Loader2,
@@ -37,6 +38,7 @@ import { HealthReminders } from '@/components/HealthReminders';
 import { HealthGoals } from '@/components/HealthGoals';
 import { HealthReportExport } from '@/components/HealthReportExport';
 import { HealthCharts } from '@/components/HealthCharts';
+import { HealthComparison } from '@/components/HealthComparison';
 import { cn } from '@/lib/utils';
 
 interface VitaminLog {
@@ -375,7 +377,7 @@ const HealthTracker = () => {
         </div>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="grid grid-cols-7 w-full max-w-4xl mx-auto bg-secondary/50 border border-border/50 p-1 rounded-2xl">
+          <TabsList className="grid grid-cols-8 w-full max-w-5xl mx-auto bg-secondary/50 border border-border/50 p-1 rounded-2xl">
             <TabsTrigger value="vitamins" className="gap-2 rounded-xl data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
               <Pill className="w-4 h-4" />
               <span className="hidden sm:inline">Vitamins</span>
@@ -391,6 +393,10 @@ const HealthTracker = () => {
             <TabsTrigger value="charts" className="gap-2 rounded-xl data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
               <BarChart3 className="w-4 h-4" />
               <span className="hidden sm:inline">Charts</span>
+            </TabsTrigger>
+            <TabsTrigger value="compare" className="gap-2 rounded-xl data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+              <GitCompare className="w-4 h-4" />
+              <span className="hidden sm:inline">Compare</span>
             </TabsTrigger>
             <TabsTrigger value="goals" className="gap-2 rounded-xl data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
               <Target className="w-4 h-4" />
@@ -888,6 +894,11 @@ const HealthTracker = () => {
           {/* Charts Tab */}
           <TabsContent value="charts" className="space-y-6 animate-fadeIn">
             <HealthCharts user={user} />
+          </TabsContent>
+
+          {/* Compare Tab */}
+          <TabsContent value="compare" className="space-y-6 animate-fadeIn">
+            <HealthComparison user={user} />
           </TabsContent>
 
           {/* Goals Tab */}
