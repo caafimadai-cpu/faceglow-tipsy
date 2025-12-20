@@ -8,7 +8,6 @@ import Community from "./pages/Community";
 import Auth from "./pages/Auth";
 import AdManager from "./pages/AdManager";
 import HealthTracker from "./pages/HealthTracker";
-import Workouts from "./pages/Workouts";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -25,7 +24,6 @@ const App = () => (
           <Route path="/auth" element={<Auth />} />
           <Route path="/ad-manager" element={<AdManager />} />
           <Route path="/health-tracker" element={<HealthTracker />} />
-          <Route path="/workouts" element={<Workouts />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
