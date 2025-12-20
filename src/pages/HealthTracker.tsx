@@ -537,7 +537,7 @@ const HealthTracker = () => {
                 {/* Bloating Level */}
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
-                    <Label>Bloating Level (Heerka Baruurta)</Label>
+                    <Label>Bloating Level (Heerka Buurnaanta Caloosha)</Label>
                     <span className={cn("font-semibold", getScoreColor(6 - gutForm.bloating_level, 5))}>
                       {gutForm.bloating_level}/5
                     </span>
