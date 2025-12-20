@@ -32,7 +32,8 @@ import {
   CheckCircle,
   Loader2,
   Bell,
-  Target
+  Target,
+  Dumbbell
 } from 'lucide-react';
 import { HealthReminders } from '@/components/HealthReminders';
 import { HealthGoals } from '@/components/HealthGoals';
@@ -354,15 +355,21 @@ const HealthTracker = () => {
         <div className="max-w-5xl mx-auto px-4 py-4 flex items-center justify-between">
           <Button variant="ghost" onClick={() => navigate('/')} className="gap-2">
             <ArrowLeft className="w-4 h-4" />
-            Back
+            Guriga
           </Button>
           <div className="flex items-center gap-2">
             <div className="w-8 h-8 rounded-lg bg-primary/10 border border-primary/30 flex items-center justify-center">
               <Heart className="w-4 h-4 text-primary" />
             </div>
-            <span className="font-serif text-lg font-semibold">Health Tracker</span>
+            <span className="font-serif text-lg font-semibold">Raadraaca Caafimaadka</span>
           </div>
-          {user && <HealthReportExport userId={user.id} />}
+          <div className="flex items-center gap-2">
+            <Button variant="outline" onClick={() => navigate('/workouts')} className="gap-2">
+              <Dumbbell className="w-4 h-4" />
+              <span className="hidden sm:inline">Jimicsiyada</span>
+            </Button>
+            {user && <HealthReportExport userId={user.id} />}
+          </div>
         </div>
       </header>
 
