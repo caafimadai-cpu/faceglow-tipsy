@@ -417,7 +417,7 @@ const HealthTracker = () => {
             <div className="analysis-card">
               <h3 className="font-serif text-lg font-semibold mb-4 flex items-center gap-2">
                 <Pill className="w-5 h-5 text-primary" />
-                Log Vitamin Intake
+                Log Vitamin Intake (Diiwaan Geli Fiitaamiinkaaga)
               </h3>
               
               <div className="flex flex-wrap gap-2 mb-4">
@@ -439,7 +439,7 @@ const HealthTracker = () => {
 
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
                 <div>
-                  <Label htmlFor="vitamin-name">Vitamin Name</Label>
+                  <Label htmlFor="vitamin-name">Vitamin Name (Magaca Fiitaamiinka)</Label>
                   <Input
                     id="vitamin-name"
                     value={newVitamin.name}
@@ -449,7 +449,7 @@ const HealthTracker = () => {
                   />
                 </div>
                 <div>
-                  <Label htmlFor="dosage">Dosage</Label>
+                  <Label htmlFor="dosage">Dosage (Qiyaasta)</Label>
                   <Input
                     id="dosage"
                     value={newVitamin.dosage}
@@ -459,7 +459,7 @@ const HealthTracker = () => {
                   />
                 </div>
                 <div>
-                  <Label htmlFor="vitamin-notes">Notes</Label>
+                  <Label htmlFor="vitamin-notes">Notes (Qoraalada)</Label>
                   <Input
                     id="vitamin-notes"
                     value={newVitamin.notes}
@@ -472,15 +472,15 @@ const HealthTracker = () => {
 
               <Button onClick={addVitamin} disabled={!newVitamin.name || loadingVitamins} className="w-full sm:w-auto gap-2">
                 <Plus className="w-4 h-4" />
-                Log Vitamin
+                Log Vitamin (Diiwaan Geli)
               </Button>
             </div>
 
             {/* Recent Vitamin Logs */}
             <div className="analysis-card">
-              <h3 className="font-serif text-lg font-semibold mb-4">Recent Logs</h3>
+              <h3 className="font-serif text-lg font-semibold mb-4">Recent Logs (Diiwaangelinta Dhawaan)</h3>
               {vitaminLogs.length === 0 ? (
-                <p className="text-muted-foreground text-center py-8">No vitamins logged yet. Start tracking!</p>
+                <p className="text-muted-foreground text-center py-8">Weli fiitaamiin lama diiwaan gelin. Bilow raadraaca!</p>
               ) : (
                 <div className="space-y-3">
                   {vitaminLogs.map((log) => (
@@ -512,14 +512,14 @@ const HealthTracker = () => {
             <div className="analysis-card">
               <h3 className="font-serif text-lg font-semibold mb-6 flex items-center gap-2">
                 <Apple className="w-5 h-5 text-primary" />
-                Daily Gut Health Check
+                Daily Gut Health Check (Baaritaanka Caafimaadka Caloosha)
               </h3>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {/* Digestion Score */}
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
-                    <Label>Digestion Score</Label>
+                    <Label>Digestion Score (Dhibcaha Dheefshiidka)</Label>
                     <span className={cn("font-semibold", getScoreColor(gutForm.digestion_score))}>
                       {gutForm.digestion_score}/10
                     </span>
@@ -557,7 +557,7 @@ const HealthTracker = () => {
                   <div className="flex items-center justify-between">
                     <Label className="flex items-center gap-2">
                       <Droplets className="w-4 h-4" />
-                      Water Intake (L)
+                      Water Intake (Cabista Biyaha)
                     </Label>
                     <span className="font-semibold text-primary">{gutForm.water_intake_liters}L</span>
                   </div>
@@ -575,7 +575,7 @@ const HealthTracker = () => {
                 <div className="flex items-center justify-between p-4 rounded-xl bg-secondary/30">
                   <Label className="flex items-center gap-2">
                     <Pill className="w-4 h-4" />
-                    Probiotic Taken Today
+                    Probiotic Taken Today (Maanta Probiotic Ma Qaadatay)
                   </Label>
                   <Switch
                     checked={gutForm.probiotic_taken}
@@ -585,7 +585,7 @@ const HealthTracker = () => {
 
                 {/* Fiber Intake */}
                 <div className="space-y-2">
-                  <Label>Fiber Intake</Label>
+                  <Label>Fiber Intake (Cunista Fiiberka)</Label>
                   <div className="flex gap-2">
                     {['low', 'moderate', 'high'].map((level) => (
                       <button
@@ -627,7 +627,7 @@ const HealthTracker = () => {
               </div>
 
               <div className="mt-6">
-                <Label>Notes</Label>
+                <Label>Notes (Qoraalada)</Label>
                 <Textarea
                   value={gutForm.notes}
                   onChange={(e) => setGutForm({ ...gutForm, notes: e.target.value })}
@@ -638,30 +638,30 @@ const HealthTracker = () => {
 
               <Button onClick={saveGutHealth} className="w-full sm:w-auto mt-6 gap-2">
                 <Plus className="w-4 h-4" />
-                Save Gut Health Log
+                Save Gut Health Log (Kaydi Xogta Caloosha)
               </Button>
             </div>
 
             {/* Recent Gut Health Logs */}
             {gutHealthLogs.length > 0 && (
               <div className="analysis-card">
-                <h3 className="font-serif text-lg font-semibold mb-4">Recent Gut Health Logs</h3>
+                <h3 className="font-serif text-lg font-semibold mb-4">Recent Gut Health Logs (Diiwaanka Caafimaadka Caloosha)</h3>
                 <div className="space-y-3">
                   {gutHealthLogs.map((log) => (
                     <div key={log.id} className="p-4 rounded-xl bg-secondary/30 border border-border/50">
                       <div className="flex items-center justify-between mb-2">
                         <span className="text-sm text-muted-foreground">{new Date(log.date).toLocaleDateString()}</span>
                         <span className={cn("font-semibold", getScoreColor(log.digestion_score || 5))}>
-                          Digestion: {log.digestion_score}/10
+                          Dheefshiid: {log.digestion_score}/10
                         </span>
                       </div>
                       <div className="grid grid-cols-3 gap-2 text-sm">
                         <div className="text-center p-2 rounded-lg bg-background/50">
-                          <p className="text-xs text-muted-foreground">Water</p>
+                          <p className="text-xs text-muted-foreground">Biyo</p>
                           <p className="font-medium">{log.water_intake_liters}L</p>
                         </div>
                         <div className="text-center p-2 rounded-lg bg-background/50">
-                          <p className="text-xs text-muted-foreground">Bloating</p>
+                          <p className="text-xs text-muted-foreground">Buurnaanta</p>
                           <p className="font-medium">{log.bloating_level}/5</p>
                         </div>
                         <div className="text-center p-2 rounded-lg bg-background/50">
@@ -681,7 +681,7 @@ const HealthTracker = () => {
             <div className="analysis-card">
               <h3 className="font-serif text-lg font-semibold mb-6 flex items-center gap-2">
                 <Activity className="w-5 h-5 text-primary" />
-                Daily Body Health Check
+                Daily Body Health Check (Baaritaanka Caafimaadka Jidhka)
               </h3>
 
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -689,7 +689,7 @@ const HealthTracker = () => {
                 <div className="space-y-2">
                   <Label className="flex items-center gap-2">
                     <Scale className="w-4 h-4" />
-                    Weight (kg)
+                    Weight (Miisaanka - kg)
                   </Label>
                   <Input
                     type="number"
@@ -701,7 +701,7 @@ const HealthTracker = () => {
 
                 {/* Height */}
                 <div className="space-y-2">
-                  <Label>Height (cm)</Label>
+                  <Label>Height (Dhererka - cm)</Label>
                   <Input
                     type="number"
                     value={bodyForm.height_cm}
@@ -713,7 +713,7 @@ const HealthTracker = () => {
                 {/* BMI Display */}
                 {bodyForm.weight_kg && bodyForm.height_cm && (
                   <div className="p-4 rounded-xl bg-primary/10 border border-primary/30 flex flex-col justify-center">
-                    <p className="text-xs text-muted-foreground">Calculated BMI</p>
+                    <p className="text-xs text-muted-foreground">Calculated BMI (BMI La Xisaabiyay)</p>
                     <p className="text-2xl font-serif font-bold text-primary">
                       {(parseFloat(bodyForm.weight_kg) / Math.pow(parseFloat(bodyForm.height_cm) / 100, 2)).toFixed(1)}
                     </p>
@@ -725,7 +725,7 @@ const HealthTracker = () => {
                   <div className="flex items-center justify-between">
                     <Label className="flex items-center gap-2">
                       <Zap className="w-4 h-4" />
-                      Energy Level
+                      Energy Level (Heerka Tamarta)
                     </Label>
                     <span className={cn("font-semibold", getScoreColor(bodyForm.energy_level))}>
                       {bodyForm.energy_level}/10
@@ -745,7 +745,7 @@ const HealthTracker = () => {
                   <div className="flex items-center justify-between">
                     <Label className="flex items-center gap-2">
                       <Moon className="w-4 h-4" />
-                      Sleep Hours
+                      Sleep Hours (Saacadaha Hurdada)
                     </Label>
                     <span className="font-semibold text-primary">{bodyForm.sleep_hours}h</span>
                   </div>
@@ -761,7 +761,7 @@ const HealthTracker = () => {
                 {/* Sleep Quality */}
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
-                    <Label>Sleep Quality</Label>
+                    <Label>Sleep Quality (Tayada Hurdada)</Label>
                     <span className={cn("font-semibold", getScoreColor(bodyForm.sleep_quality))}>
                       {bodyForm.sleep_quality}/10
                     </span>
@@ -778,7 +778,7 @@ const HealthTracker = () => {
                 {/* Stress Level */}
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
-                    <Label>Stress Level</Label>
+                    <Label>Stress Level (Heerka Walwalka)</Label>
                     <span className={cn("font-semibold", getScoreColor(11 - bodyForm.stress_level))}>
                       {bodyForm.stress_level}/10
                     </span>
@@ -797,7 +797,7 @@ const HealthTracker = () => {
                   <div className="flex items-center justify-between">
                     <Label className="flex items-center gap-2">
                       <Droplets className="w-4 h-4" />
-                      Water (glasses)
+                      Water (Biyo - koobab)
                     </Label>
                     <span className="font-semibold text-primary">{bodyForm.water_glasses}</span>
                   </div>
@@ -814,7 +814,7 @@ const HealthTracker = () => {
                 <div className="space-y-2">
                   <Label className="flex items-center gap-2">
                     <Clock className="w-4 h-4" />
-                    Exercise (minutes)
+                    Exercise (Jimicsiga - daqiiqo)
                   </Label>
                   <Input
                     type="number"
@@ -826,7 +826,7 @@ const HealthTracker = () => {
 
                 {/* Exercise Type */}
                 <div className="space-y-2">
-                  <Label>Exercise Type</Label>
+                  <Label>Exercise Type (Nooca Jimicsiga)</Label>
                   <Input
                     value={bodyForm.exercise_type}
                     onChange={(e) => setBodyForm({ ...bodyForm, exercise_type: e.target.value })}
@@ -836,7 +836,7 @@ const HealthTracker = () => {
               </div>
 
               <div className="mt-6">
-                <Label>Notes</Label>
+                <Label>Notes (Qoraalada)</Label>
                 <Textarea
                   value={bodyForm.notes}
                   onChange={(e) => setBodyForm({ ...bodyForm, notes: e.target.value })}
@@ -847,14 +847,14 @@ const HealthTracker = () => {
 
               <Button onClick={saveBodyHealth} className="w-full sm:w-auto mt-6 gap-2">
                 <Plus className="w-4 h-4" />
-                Save Body Health Log
+                Save Body Health Log (Kaydi Xogta Jidhka)
               </Button>
             </div>
 
             {/* Recent Body Health Logs */}
             {bodyHealthLogs.length > 0 && (
               <div className="analysis-card">
-                <h3 className="font-serif text-lg font-semibold mb-4">Recent Body Health Logs</h3>
+                <h3 className="font-serif text-lg font-semibold mb-4">Recent Body Health Logs (Diiwaanka Caafimaadka Jidhka)</h3>
                 <div className="space-y-3">
                   {bodyHealthLogs.map((log) => (
                     <div key={log.id} className="p-4 rounded-xl bg-secondary/30 border border-border/50">
@@ -868,20 +868,20 @@ const HealthTracker = () => {
                       </div>
                       <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-sm">
                         <div className="text-center p-2 rounded-lg bg-background/50">
-                          <p className="text-xs text-muted-foreground">Energy</p>
+                          <p className="text-xs text-muted-foreground">Tamarta</p>
                           <p className={cn("font-medium", getScoreColor(log.energy_level || 5))}>{log.energy_level}/10</p>
                         </div>
                         <div className="text-center p-2 rounded-lg bg-background/50">
-                          <p className="text-xs text-muted-foreground">Sleep</p>
+                          <p className="text-xs text-muted-foreground">Hurdo</p>
                           <p className="font-medium">{log.sleep_hours}h</p>
                         </div>
                         <div className="text-center p-2 rounded-lg bg-background/50">
-                          <p className="text-xs text-muted-foreground">Stress</p>
+                          <p className="text-xs text-muted-foreground">Walwal</p>
                           <p className={cn("font-medium", getScoreColor(11 - (log.stress_level || 5)))}>{log.stress_level}/10</p>
                         </div>
                         <div className="text-center p-2 rounded-lg bg-background/50">
-                          <p className="text-xs text-muted-foreground">Water</p>
-                          <p className="font-medium">{log.water_glasses} glasses</p>
+                          <p className="text-xs text-muted-foreground">Biyo</p>
+                          <p className="font-medium">{log.water_glasses} koob</p>
                         </div>
                       </div>
                     </div>
