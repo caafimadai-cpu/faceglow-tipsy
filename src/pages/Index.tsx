@@ -252,7 +252,7 @@ const Index = () => {
               <div className="w-10 h-10 rounded-xl bg-primary/10 border border-primary/30 flex items-center justify-center">
                 <Sparkles className="w-5 h-5 text-primary" />
               </div>
-              <span className="font-serif text-xl font-semibold">SkinAI</span>
+              <span className="font-serif text-xl font-semibold">CaafimaadAI</span>
             </div>
             
             <div className="flex items-center gap-3">
@@ -436,10 +436,10 @@ const Index = () => {
               <div className="w-8 h-8 rounded-lg bg-primary/10 border border-primary/30 flex items-center justify-center">
                 <Sparkles className="w-4 h-4 text-primary" />
               </div>
-              <span className="font-serif text-sm">SkinAI</span>
+              <span className="font-serif text-sm">CaafimaadAI</span>
             </div>
             <p className="text-sm text-muted-foreground">
-              © 2024 SkinAI. Advanced skin analysis powered by AI.
+              © 2024 CaafimaadAI. AI-powered health analysis.
             </p>
           </div>
         </div>
