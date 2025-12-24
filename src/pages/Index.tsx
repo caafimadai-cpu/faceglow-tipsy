@@ -9,44 +9,30 @@ import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { User, Session } from '@supabase/supabase-js';
 import { useTranslation } from 'react-i18next';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-
 const analyzeImage = async (file: File) => {
   const reader = new FileReader();
-  const base64Promise = new Promise<string>((resolve) => {
+  const base64Promise = new Promise<string>(resolve => {
     reader.onloadend = () => resolve(reader.result as string);
     reader.readAsDataURL(file);
   });
-  
   const imageBase64 = await base64Promise;
-  
-  const response = await fetch(
-    `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/analyze-face`,
-    {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
-      },
-      body: JSON.stringify({ imageBase64 }),
-    }
-  );
-
+  const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/analyze-face`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`
+    },
+    body: JSON.stringify({
+      imageBase64
+    })
+  });
   if (!response.ok) {
     throw new Error('Analysis failed');
   }
-
   const result = await response.json();
-  
   return {
     hydration: result.skinHealth?.qoyaan || result.skinHealth?.hydration || 70,
     clarity: result.skinHealth?.nadiifnimo || result.skinHealth?.clarity,
@@ -61,7 +47,6 @@ const analyzeImage = async (file: File) => {
     recommendations: result.talooyinka || result.recommendations || []
   };
 };
-
 const Index = () => {
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [analysisResults, setAnalysisResults] = useState<any>(null);
@@ -72,49 +57,53 @@ const Index = () => {
   const [showPaymentDialog, setShowPaymentDialog] = useState(false);
   const [phoneNumber, setPhoneNumber] = useState('');
   const [isProcessingPayment, setIsProcessingPayment] = useState(false);
-  const { toast } = useToast();
+  const {
+    toast
+  } = useToast();
   const navigate = useNavigate();
-  const { t, i18n } = useTranslation();
-
+  const {
+    t,
+    i18n
+  } = useTranslation();
   useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+    const {
+      data: {
+        subscription
+      }
+    } = supabase.auth.onAuthStateChange((event, session) => {
       setSession(session);
       setUser(session?.user ?? null);
     });
-
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    supabase.auth.getSession().then(({
+      data: {
+        session
+      }
+    }) => {
       setSession(session);
       setUser(session?.user ?? null);
     });
-
     return () => subscription.unsubscribe();
   }, []);
-
   useEffect(() => {
     if (user) {
       fetchUserCredits();
     }
   }, [user]);
-
   const fetchUserCredits = async () => {
     if (!user) return;
-
-    const { data, error } = await supabase
-      .from('user_credits')
-      .select('*')
-      .eq('user_id', user.id)
-      .maybeSingle();
-
+    const {
+      data,
+      error
+    } = await supabase.from('user_credits').select('*').eq('user_id', user.id).maybeSingle();
     if (error) {
       console.error('Error fetching credits:', error);
       return;
     }
-
     if (!data) {
       await supabase.from('user_credits').insert({
         user_id: user.id,
         upload_count: 0,
-        has_paid: false,
+        has_paid: false
       });
       setUploadCount(0);
       setHasPaid(false);
@@ -122,12 +111,11 @@ const Index = () => {
       const lastReset = new Date(data.last_reset_at);
       const now = new Date();
       const hoursSinceReset = (now.getTime() - lastReset.getTime()) / (1000 * 60 * 60);
-
       if (hoursSinceReset >= 24 && !data.has_paid) {
-        await supabase
-          .from('user_credits')
-          .update({ upload_count: 0, last_reset_at: now.toISOString() })
-          .eq('user_id', user.id);
+        await supabase.from('user_credits').update({
+          upload_count: 0,
+          last_reset_at: now.toISOString()
+        }).eq('user_id', user.id);
         setUploadCount(0);
       } else {
         setUploadCount(data.upload_count);
@@ -135,7 +123,6 @@ const Index = () => {
       setHasPaid(data.has_paid);
     }
   };
-
   const handleImageSelect = async (file: File) => {
     if (!user) {
       toast({
@@ -146,22 +133,17 @@ const Index = () => {
       navigate('/auth');
       return;
     }
-
     if (!hasPaid && uploadCount >= 2) {
       setShowPaymentDialog(true);
       return;
     }
-
     try {
       setIsAnalyzing(true);
       const results = await analyzeImage(file);
       setAnalysisResults(results);
-
-      await supabase
-        .from('user_credits')
-        .update({ upload_count: uploadCount + 1 })
-        .eq('user_id', user.id);
-      
+      await supabase.from('user_credits').update({
+        upload_count: uploadCount + 1
+      }).eq('user_id', user.id);
       setUploadCount(uploadCount + 1);
     } catch (error) {
       toast({
@@ -173,37 +155,34 @@ const Index = () => {
       setIsAnalyzing(false);
     }
   };
-
   const handlePayment = async () => {
     if (!phoneNumber || !user) return;
-
     setIsProcessingPayment(true);
     try {
-      const { data, error } = await supabase.functions.invoke('hormuud-payment', {
+      const {
+        data,
+        error
+      } = await supabase.functions.invoke('hormuud-payment', {
         body: {
           communityId: 'unlimited-uploads',
           userId: user.id,
           amount: 1,
-          phoneNumber: phoneNumber,
-        },
+          phoneNumber: phoneNumber
+        }
       });
-
       if (error) throw error;
-
       if (data.success) {
-        await supabase
-          .from('user_credits')
-          .update({ has_paid: true, upload_count: 0 })
-          .eq('user_id', user.id);
-
+        await supabase.from('user_credits').update({
+          has_paid: true,
+          upload_count: 0
+        }).eq('user_id', user.id);
         setHasPaid(true);
         setUploadCount(0);
         setShowPaymentDialog(false);
         setPhoneNumber('');
-
         toast({
           title: 'Payment Successful',
-          description: 'You now have unlimited uploads and community access!',
+          description: 'You now have unlimited uploads and community access!'
         });
       }
     } catch (error: any) {
@@ -216,33 +195,38 @@ const Index = () => {
       setIsProcessingPayment(false);
     }
   };
-
   const handleSignOut = async () => {
     await supabase.auth.signOut();
     toast({
       title: t('success'),
-      description: t('signedOut'),
+      description: t('signedOut')
     });
   };
-
   const toggleLanguage = () => {
     const languages = ['en', 'ar', 'so'];
     const currentIndex = languages.indexOf(i18n.language);
     const nextIndex = (currentIndex + 1) % languages.length;
     i18n.changeLanguage(languages[nextIndex]);
   };
-
-  const features = [
-    { icon: Scan, title: 'AI Analysis', desc: 'Advanced skin detection' },
-    { icon: Shield, title: 'Privacy First', desc: 'Secure & encrypted' },
-    { icon: Zap, title: 'Instant Results', desc: 'Under 5 seconds' },
-  ];
-
-  return (
-    <div className="min-h-screen grain" dir={i18n.language === 'ar' ? 'rtl' : 'ltr'}>
+  const features = [{
+    icon: Scan,
+    title: 'AI Analysis',
+    desc: 'Advanced skin detection'
+  }, {
+    icon: Shield,
+    title: 'Privacy First',
+    desc: 'Secure & encrypted'
+  }, {
+    icon: Zap,
+    title: 'Instant Results',
+    desc: 'Under 5 seconds'
+  }];
+  return <div className="min-h-screen grain" dir={i18n.language === 'ar' ? 'rtl' : 'ltr'}>
       {/* Ambient Background Glow */}
       <div className="hero-glow w-[600px] h-[600px] -top-[300px] left-1/2 -translate-x-1/2 animate-pulse-glow" />
-      <div className="hero-glow w-[400px] h-[400px] top-1/2 -left-[200px] animate-pulse-glow" style={{ animationDelay: '2s' }} />
+      <div className="hero-glow w-[400px] h-[400px] top-1/2 -left-[200px] animate-pulse-glow" style={{
+      animationDelay: '2s'
+    }} />
       
       {/* Navigation */}
       <nav className="sticky top-0 z-50 glass border-b border-border/50">
@@ -256,51 +240,27 @@ const Index = () => {
             </div>
             
             <div className="flex items-center gap-3">
-              <Button 
-                onClick={toggleLanguage}
-                variant="ghost"
-                size="icon"
-                className="rounded-xl hover:bg-secondary"
-              >
+              <Button onClick={toggleLanguage} variant="ghost" size="icon" className="rounded-xl hover:bg-secondary">
                 <Globe className="w-4 h-4" />
               </Button>
               
-              <Button 
-                onClick={() => navigate('/health-tracker')}
-                variant="ghost"
-                className="hidden sm:flex gap-2 rounded-xl hover:bg-secondary"
-              >
+              <Button onClick={() => navigate('/health-tracker')} variant="ghost" className="hidden sm:flex gap-2 rounded-xl hover:bg-secondary">
                 <Heart className="w-4 h-4" />
                 Health
               </Button>
               
-              <Button 
-                onClick={() => navigate('/community')}
-                variant="ghost"
-                className="hidden sm:flex gap-2 rounded-xl hover:bg-secondary"
-              >
+              <Button onClick={() => navigate('/community')} variant="ghost" className="hidden sm:flex gap-2 rounded-xl hover:bg-secondary">
                 <Users className="w-4 h-4" />
                 {t('community')}
               </Button>
               
-              {user ? (
-                <Button 
-                  onClick={handleSignOut}
-                  variant="outline"
-                  className="gap-2 rounded-xl border-border/50 hover:border-primary/50 hover:bg-primary/5"
-                >
+              {user ? <Button onClick={handleSignOut} variant="outline" className="gap-2 rounded-xl border-border/50 hover:border-primary/50 hover:bg-primary/5">
                   <LogOut className="w-4 h-4" />
                   <span className="hidden sm:inline">{t('signOut')}</span>
-                </Button>
-              ) : (
-                <Button 
-                  onClick={() => navigate('/auth')}
-                  className="gap-2 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground btn-premium"
-                >
+                </Button> : <Button onClick={() => navigate('/auth')} className="gap-2 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground btn-premium">
                   {t('signIn')}
                   <ArrowRight className="w-4 h-4" />
-                </Button>
-              )}
+                </Button>}
             </div>
           </div>
         </div>
@@ -343,41 +303,37 @@ const Index = () => {
 
               {/* Feature Pills */}
               <div className="flex flex-wrap justify-center gap-4 pt-4">
-                {features.map((feature, index) => (
-                  <div 
-                    key={feature.title}
-                    className="flex items-center gap-3 px-4 py-2.5 rounded-2xl bg-secondary/50 border border-border/50 animate-slideUp opacity-0"
-                    style={{ animationDelay: `${0.2 + index * 0.1}s`, animationFillMode: 'forwards' }}
-                  >
+                {features.map((feature, index) => <div key={feature.title} className="flex items-center gap-3 px-4 py-2.5 rounded-2xl bg-secondary/50 border border-border/50 animate-slideUp opacity-0" style={{
+                animationDelay: `${0.2 + index * 0.1}s`,
+                animationFillMode: 'forwards'
+              }}>
                     <feature.icon className="w-4 h-4 text-primary" />
                     <div className="text-left">
                       <p className="text-sm font-medium">{feature.title}</p>
                       <p className="text-xs text-muted-foreground">{feature.desc}</p>
                     </div>
-                  </div>
-                ))}
+                  </div>)}
               </div>
 
               {/* Credits Display */}
-              {user && (
-                <div className="pt-4 animate-fadeIn" style={{ animationDelay: '0.5s' }}>
-                  {hasPaid ? (
-                    <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/30 text-primary text-sm font-medium">
+              {user && <div className="pt-4 animate-fadeIn" style={{
+              animationDelay: '0.5s'
+            }}>
+                  {hasPaid ? <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/30 text-primary text-sm font-medium">
                       <Zap className="w-4 h-4" />
                       Unlimited uploads active
-                    </div>
-                  ) : (
-                    <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-secondary border border-border text-sm">
+                    </div> : <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-secondary border border-border text-sm">
                       <span className="text-muted-foreground">Free uploads:</span>
                       <span className="font-semibold text-foreground">{Math.max(0, 2 - uploadCount)} / 2</span>
-                    </div>
-                  )}
-                </div>
-              )}
+                    </div>}
+                </div>}
             </section>
 
             {/* Upload Section */}
-            <section className="animate-slideUp opacity-0" style={{ animationDelay: '0.3s', animationFillMode: 'forwards' }}>
+            <section className="animate-slideUp opacity-0" style={{
+            animationDelay: '0.3s',
+            animationFillMode: 'forwards'
+          }}>
               <ImageUpload onImageSelect={handleImageSelect} />
             </section>
 
@@ -387,8 +343,7 @@ const Index = () => {
             </div>
 
             {/* Loading State */}
-            {isAnalyzing && (
-              <div className="flex flex-col items-center gap-6 py-12 animate-fadeIn">
+            {isAnalyzing && <div className="flex flex-col items-center gap-6 py-12 animate-fadeIn">
                 <div className="relative">
                   <div className="w-16 h-16 rounded-full border-2 border-primary/20" />
                   <div className="absolute inset-0 w-16 h-16 rounded-full border-2 border-transparent border-t-primary animate-spin" />
@@ -398,18 +353,15 @@ const Index = () => {
                   <p className="font-medium">{t('analyzing')}</p>
                   <p className="text-sm text-muted-foreground">This usually takes a few seconds</p>
                 </div>
-              </div>
-            )}
+              </div>}
 
             {/* Results */}
-            {!isAnalyzing && analysisResults && (
-              <>
+            {!isAnalyzing && analysisResults && <>
                 <AnalysisResult results={analysisResults} />
                 <div className="mt-8">
                   <AdSlot type="video" placement="post-results-video" />
                 </div>
-              </>
-            )}
+              </>}
 
             {/* Bottom Banner Ad */}
             <div className="pt-8">
@@ -438,9 +390,8 @@ const Index = () => {
               </div>
               <span className="font-serif text-sm">CaafimaadAI</span>
             </div>
-            <p className="text-sm text-muted-foreground">
-              © 2024 CaafimaadAI. AI-powered health analysis.
-            </p>
+            <p className="text-sm text-muted-foreground">© 2024 CaafimaadAI. by mycaafimaad
+.</p>
           </div>
         </div>
       </footer>
@@ -469,42 +420,22 @@ const Index = () => {
             
             <div className="space-y-2">
               <Label htmlFor="phone" className="text-sm font-medium">EVC Plus Phone Number</Label>
-              <Input
-                id="phone"
-                placeholder="252xxxxxxxxx"
-                value={phoneNumber}
-                onChange={(e) => setPhoneNumber(e.target.value)}
-                className="rounded-xl bg-secondary border-border/50 focus:border-primary/50"
-              />
+              <Input id="phone" placeholder="252xxxxxxxxx" value={phoneNumber} onChange={e => setPhoneNumber(e.target.value)} className="rounded-xl bg-secondary border-border/50 focus:border-primary/50" />
             </div>
           </div>
           <DialogFooter className="gap-2 sm:gap-0">
-            <Button
-              variant="ghost"
-              onClick={() => setShowPaymentDialog(false)}
-              className="rounded-xl"
-            >
+            <Button variant="ghost" onClick={() => setShowPaymentDialog(false)} className="rounded-xl">
               Wait 24 Hours
             </Button>
-            <Button
-              onClick={handlePayment}
-              disabled={!phoneNumber || isProcessingPayment}
-              className="rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground btn-premium"
-            >
-              {isProcessingPayment ? (
-                <>
+            <Button onClick={handlePayment} disabled={!phoneNumber || isProcessingPayment} className="rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground btn-premium">
+              {isProcessingPayment ? <>
                   <Loader2 className="w-4 h-4 mr-2 animate-spin" />
                   Processing...
-                </>
-              ) : (
-                'Pay $1 via EVC Plus'
-              )}
+                </> : 'Pay $1 via EVC Plus'}
             </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </div>
-  );
+    </div>;
 };
-
 export default Index;
