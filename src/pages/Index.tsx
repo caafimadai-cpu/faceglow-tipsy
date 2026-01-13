@@ -390,7 +390,7 @@ const Index = () => {
               </div>
               <span className="font-serif text-sm">CaafimaadAI</span>
             </div>
-            <p className="text-sm text-muted-foreground">© 2025 CaafimaadAI. by mycaafimaad .</p>
+            <p className="text-sm text-muted-foreground">© 2026 CaafimaadAI. by mycaafimaad .</p>
           </div>
         </div>
       </footer>
