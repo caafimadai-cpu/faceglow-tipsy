@@ -287,7 +287,7 @@ const Index = () => {
               <div className="space-y-2">
                 <div className="floating-badge mx-auto animate-float">
                   <Sparkles className="w-3 h-3" />
-                  Powered by Advanced AI
+                  Powered by mycaafimaad
                 </div>
               </div>
               
