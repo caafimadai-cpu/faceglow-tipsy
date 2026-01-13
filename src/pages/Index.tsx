@@ -221,10 +221,10 @@ const Index = () => {
     title: 'Instant Results',
     desc: 'Under 5 seconds'
   }];
-  return <div className="min-h-screen grain" dir={i18n.language === 'ar' ? 'rtl' : 'ltr'}>
-      {/* Ambient Background Glow */}
-      <div className="hero-glow w-[600px] h-[600px] -top-[300px] left-1/2 -translate-x-1/2 animate-pulse-glow" />
-      <div className="hero-glow w-[400px] h-[400px] top-1/2 -left-[200px] animate-pulse-glow" style={{
+  return <div className="min-h-screen grain overflow-x-hidden" dir={i18n.language === 'ar' ? 'rtl' : 'ltr'}>
+      {/* Ambient Background Glow - Hidden on mobile to prevent overflow */}
+      <div className="hero-glow hidden sm:block w-[600px] h-[600px] -top-[300px] left-1/2 -translate-x-1/2 animate-pulse-glow" />
+      <div className="hero-glow hidden sm:block w-[400px] h-[400px] top-1/2 -left-[200px] animate-pulse-glow" style={{
       animationDelay: '2s'
     }} />
       
