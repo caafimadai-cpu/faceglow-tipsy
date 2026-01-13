@@ -3,7 +3,7 @@ import { ImageUpload } from '@/components/ImageUpload';
 import { AnalysisResult } from '@/components/AnalysisResult';
 import { AdSlot } from '@/components/AdSlot';
 import { useToast } from '@/components/ui/use-toast';
-import { Loader2, Users, LogOut, Globe, Sparkles, ArrowRight, Scan, Shield, Zap, Heart } from 'lucide-react';
+import { Loader2, Users, LogOut, Globe, Sparkles, ArrowRight, Scan, Shield, Zap, Heart, Menu, X, Activity, Pill } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
@@ -12,6 +12,7 @@ import { useTranslation } from 'react-i18next';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 const analyzeImage = async (file: File) => {
   const reader = new FileReader();
   const base64Promise = new Promise<string>(resolve => {
@@ -57,6 +58,7 @@ const Index = () => {
   const [showPaymentDialog, setShowPaymentDialog] = useState(false);
   const [phoneNumber, setPhoneNumber] = useState('');
   const [isProcessingPayment, setIsProcessingPayment] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const {
     toast
   } = useToast();
@@ -244,6 +246,7 @@ const Index = () => {
                 <Globe className="w-4 h-4" />
               </Button>
               
+              {/* Desktop Navigation */}
               <Button onClick={() => navigate('/health-tracker')} variant="ghost" className="hidden sm:flex gap-2 rounded-xl hover:bg-secondary">
                 <Heart className="w-4 h-4" />
                 Health
@@ -254,13 +257,99 @@ const Index = () => {
                 {t('community')}
               </Button>
               
-              {user ? <Button onClick={handleSignOut} variant="outline" className="gap-2 rounded-xl border-border/50 hover:border-primary/50 hover:bg-primary/5">
+              {user ? <Button onClick={handleSignOut} variant="outline" className="hidden sm:flex gap-2 rounded-xl border-border/50 hover:border-primary/50 hover:bg-primary/5">
                   <LogOut className="w-4 h-4" />
-                  <span className="hidden sm:inline">{t('signOut')}</span>
-                </Button> : <Button onClick={() => navigate('/auth')} className="gap-2 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground btn-premium">
+                  <span>{t('signOut')}</span>
+                </Button> : <Button onClick={() => navigate('/auth')} className="hidden sm:flex gap-2 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground btn-premium">
                   {t('signIn')}
                   <ArrowRight className="w-4 h-4" />
                 </Button>}
+
+              {/* Mobile Menu Button */}
+              <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
+                <SheetTrigger asChild>
+                  <Button variant="ghost" size="icon" className="sm:hidden rounded-xl hover:bg-secondary">
+                    <Menu className="w-5 h-5" />
+                  </Button>
+                </SheetTrigger>
+                <SheetContent side="right" className="w-[280px] bg-background border-border/50">
+                  <SheetHeader>
+                    <SheetTitle className="flex items-center gap-3 font-serif">
+                      <div className="w-8 h-8 rounded-lg bg-primary/10 border border-primary/30 flex items-center justify-center">
+                        <Sparkles className="w-4 h-4 text-primary" />
+                      </div>
+                      CaafimaadAI
+                    </SheetTitle>
+                  </SheetHeader>
+                  <div className="flex flex-col gap-2 mt-6">
+                    <Button 
+                      onClick={() => { navigate('/'); setMobileMenuOpen(false); }} 
+                      variant="ghost" 
+                      className="w-full justify-start gap-3 rounded-xl hover:bg-secondary h-12"
+                    >
+                      <Scan className="w-5 h-5 text-primary" />
+                      Face Analysis
+                    </Button>
+                    
+                    <Button 
+                      onClick={() => { navigate('/health-tracker'); setMobileMenuOpen(false); }} 
+                      variant="ghost" 
+                      className="w-full justify-start gap-3 rounded-xl hover:bg-secondary h-12"
+                    >
+                      <Heart className="w-5 h-5 text-primary" />
+                      Health Tracker
+                    </Button>
+                    
+                    <Button 
+                      onClick={() => { navigate('/health-tracker'); setMobileMenuOpen(false); }} 
+                      variant="ghost" 
+                      className="w-full justify-start gap-3 rounded-xl hover:bg-secondary h-12"
+                    >
+                      <Pill className="w-5 h-5 text-primary" />
+                      Vitamins
+                    </Button>
+                    
+                    <Button 
+                      onClick={() => { navigate('/health-tracker'); setMobileMenuOpen(false); }} 
+                      variant="ghost" 
+                      className="w-full justify-start gap-3 rounded-xl hover:bg-secondary h-12"
+                    >
+                      <Activity className="w-5 h-5 text-primary" />
+                      Body & Gut Health
+                    </Button>
+                    
+                    <Button 
+                      onClick={() => { navigate('/community'); setMobileMenuOpen(false); }} 
+                      variant="ghost" 
+                      className="w-full justify-start gap-3 rounded-xl hover:bg-secondary h-12"
+                    >
+                      <Users className="w-5 h-5 text-primary" />
+                      {t('community')}
+                    </Button>
+                    
+                    <div className="border-t border-border/50 my-4" />
+                    
+                    {user ? (
+                      <Button 
+                        onClick={() => { handleSignOut(); setMobileMenuOpen(false); }} 
+                        variant="outline" 
+                        className="w-full justify-start gap-3 rounded-xl border-border/50 h-12"
+                      >
+                        <LogOut className="w-5 h-5" />
+                        {t('signOut')}
+                      </Button>
+                    ) : (
+                      <Button 
+                        onClick={() => { navigate('/auth'); setMobileMenuOpen(false); }} 
+                        className="w-full justify-start gap-3 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground h-12"
+                      >
+                        <ArrowRight className="w-5 h-5" />
+                        {t('signIn')}
+                      </Button>
+                    )}
+                  </div>
+                </SheetContent>
+              </Sheet>
             </div>
           </div>
         </div>
