@@ -135,7 +135,7 @@ const Index = () => {
       navigate('/auth');
       return;
     }
-    if (!hasPaid && uploadCount >= 2) {
+    if (!hasPaid && uploadCount >= 1) {
       setShowPaymentDialog(true);
       return;
     }
@@ -413,7 +413,7 @@ const Index = () => {
                       Unlimited uploads active
                     </div> : <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-secondary border border-border text-sm">
                       <span className="text-muted-foreground">Free uploads:</span>
-                      <span className="font-semibold text-foreground">{Math.max(0, 2 - uploadCount)} / 2</span>
+                      <span className="font-semibold text-foreground">{Math.max(0, 1 - uploadCount)} / 1</span>
                     </div>}
                 </div>}
             </section>
