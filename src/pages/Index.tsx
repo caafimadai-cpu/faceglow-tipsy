@@ -239,7 +239,7 @@ const Index = () => {
               <img 
                 src={logoImage} 
                 alt="CaafimaadAI Logo" 
-                className="w-10 h-10 object-contain"
+                className="w-14 h-14 object-contain"
                 loading="eager"
               />
               <span className="font-serif text-xl font-semibold">CaafimaadAI</span>
@@ -282,7 +282,7 @@ const Index = () => {
                       <img 
                         src={logoImage} 
                         alt="CaafimaadAI Logo" 
-                        className="w-8 h-8 object-contain"
+                        className="w-12 h-12 object-contain"
                       />
                       CaafimaadAI
                     </SheetTitle>
