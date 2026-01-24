@@ -381,7 +381,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      get_community_member_count: {
+        Args: { community_uuid: string }
+        Returns: number
+      }
     }
     Enums: {
       [_ in never]: never
