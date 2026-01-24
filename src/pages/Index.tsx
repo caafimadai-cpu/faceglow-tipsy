@@ -13,6 +13,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
+import logoImage from '@/assets/logo.png';
 const analyzeImage = async (file: File) => {
   const reader = new FileReader();
   const base64Promise = new Promise<string>(resolve => {
@@ -235,9 +236,12 @@ const Index = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-primary/10 border border-primary/30 flex items-center justify-center">
-                <Sparkles className="w-5 h-5 text-primary" />
-              </div>
+              <img 
+                src={logoImage} 
+                alt="CaafimaadAI Logo" 
+                className="w-10 h-10 object-contain"
+                loading="eager"
+              />
               <span className="font-serif text-xl font-semibold">CaafimaadAI</span>
             </div>
             
@@ -275,9 +279,11 @@ const Index = () => {
                 <SheetContent side="right" className="w-[280px] bg-background border-border/50">
                   <SheetHeader>
                     <SheetTitle className="flex items-center gap-3 font-serif">
-                      <div className="w-8 h-8 rounded-lg bg-primary/10 border border-primary/30 flex items-center justify-center">
-                        <Sparkles className="w-4 h-4 text-primary" />
-                      </div>
+                      <img 
+                        src={logoImage} 
+                        alt="CaafimaadAI Logo" 
+                        className="w-8 h-8 object-contain"
+                      />
                       CaafimaadAI
                     </SheetTitle>
                   </SheetHeader>
