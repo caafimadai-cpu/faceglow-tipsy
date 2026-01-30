@@ -4,11 +4,13 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Users, CheckCircle, ArrowLeft, LogOut } from 'lucide-react';
+import { Users, CheckCircle, ArrowLeft, LogOut, BookOpen, Plus, Calendar } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useNavigate } from 'react-router-dom';
 import { User, Session } from '@supabase/supabase-js';
+import { format } from 'date-fns';
 
 interface Community {
   id: string;
@@ -17,29 +19,56 @@ interface Community {
   member_count: number;
 }
 
+interface CommunityPost {
+  id: string;
+  community_id: string;
+  title: string;
+  content: string;
+  created_at: string;
+}
+
+interface Membership {
+  community_id: string;
+  payment_status: string;
+}
+
 const Community = () => {
   const [communities, setCommunities] = useState<Community[]>([]);
+  const [memberships, setMemberships] = useState<Membership[]>([]);
+  const [posts, setPosts] = useState<CommunityPost[]>([]);
   const [loading, setLoading] = useState(true);
   const [joiningId, setJoiningId] = useState<string | null>(null);
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [showPaymentDialog, setShowPaymentDialog] = useState(false);
-  const [selectedCommunity, setSelectedCommunity] = useState<string | null>(null);
+  const [showPostsDialog, setShowPostsDialog] = useState(false);
+  const [showCreatePostDialog, setShowCreatePostDialog] = useState(false);
+  const [selectedCommunity, setSelectedCommunity] = useState<Community | null>(null);
   const [phoneNumber, setPhoneNumber] = useState('');
+  const [newPostTitle, setNewPostTitle] = useState('');
+  const [newPostContent, setNewPostContent] = useState('');
+  const [creatingPost, setCreatingPost] = useState(false);
   const { toast } = useToast();
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Set up auth state listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       setSession(session);
       setUser(session?.user ?? null);
+      if (session?.user) {
+        fetchMemberships(session.user.id);
+      } else {
+        setMemberships([]);
+        setPosts([]);
+      }
     });
 
-    // Check for existing session
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
       setUser(session?.user ?? null);
+      if (session?.user) {
+        fetchMemberships(session.user.id);
+      }
     });
 
     fetchCommunities();
@@ -68,7 +97,47 @@ const Community = () => {
     }
   };
 
-  const handleJoinCommunity = async (communityId: string) => {
+  const fetchMemberships = async (userId: string) => {
+    try {
+      const { data, error } = await supabase
+        .from('community_members')
+        .select('community_id, payment_status')
+        .eq('user_id', userId);
+
+      if (error) throw error;
+      setMemberships(data || []);
+    } catch (error) {
+      console.error('Error fetching memberships:', error);
+    }
+  };
+
+  const fetchPosts = async (communityId: string) => {
+    try {
+      const { data, error } = await supabase
+        .from('community_posts')
+        .select('*')
+        .eq('community_id', communityId)
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      setPosts(data || []);
+    } catch (error) {
+      console.error('Error fetching posts:', error);
+      toast({
+        title: 'Khalad',
+        description: 'Wax khalad ah ayaa dhacay marka la soo qaadayo maqaallada',
+        variant: 'destructive',
+      });
+    }
+  };
+
+  const isMember = (communityId: string) => {
+    return memberships.some(
+      m => m.community_id === communityId && m.payment_status === 'completed'
+    );
+  };
+
+  const handleJoinCommunity = async (community: Community) => {
     if (!user) {
       toast({
         title: 'Gal ama Diwaangeli',
@@ -79,8 +148,14 @@ const Community = () => {
       return;
     }
 
-    setSelectedCommunity(communityId);
+    setSelectedCommunity(community);
     setShowPaymentDialog(true);
+  };
+
+  const handleViewPosts = async (community: Community) => {
+    setSelectedCommunity(community);
+    await fetchPosts(community.id);
+    setShowPostsDialog(true);
   };
 
   const handlePayment = async () => {
@@ -95,13 +170,12 @@ const Community = () => {
 
     if (!selectedCommunity || !user) return;
 
-    setJoiningId(selectedCommunity);
+    setJoiningId(selectedCommunity.id);
     
     try {
-      // Call Hormuud payment API
       const { data, error } = await supabase.functions.invoke('hormuud-payment', {
         body: {
-          communityId: selectedCommunity,
+          communityId: selectedCommunity.id,
           userId: user.id,
           amount: 5,
           phoneNumber: phoneNumber,
@@ -118,6 +192,7 @@ const Community = () => {
       setShowPaymentDialog(false);
       setPhoneNumber('');
       fetchCommunities();
+      fetchMemberships(user.id);
     } catch (error: any) {
       console.error('Error joining community:', error);
       toast({
@@ -127,6 +202,52 @@ const Community = () => {
       });
     } finally {
       setJoiningId(null);
+    }
+  };
+
+  const handleCreatePost = async () => {
+    if (!newPostTitle.trim() || !newPostContent.trim()) {
+      toast({
+        title: 'Khalad',
+        description: 'Fadlan buuxi cinwaanka iyo qoraalka',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    if (!selectedCommunity || !user) return;
+
+    setCreatingPost(true);
+    try {
+      const { error } = await supabase
+        .from('community_posts')
+        .insert({
+          community_id: selectedCommunity.id,
+          author_id: user.id,
+          title: newPostTitle,
+          content: newPostContent,
+        });
+
+      if (error) throw error;
+
+      toast({
+        title: 'Guul!',
+        description: 'Maqaalka waa la dhigay',
+      });
+
+      setNewPostTitle('');
+      setNewPostContent('');
+      setShowCreatePostDialog(false);
+      fetchPosts(selectedCommunity.id);
+    } catch (error: any) {
+      console.error('Error creating post:', error);
+      toast({
+        title: 'Khalad',
+        description: 'Wax khalad ah ayaa dhacay marka la dhigayo maqaalka',
+        variant: 'destructive',
+      });
+    } finally {
+      setCreatingPost(false);
     }
   };
 
@@ -184,57 +305,79 @@ const Community = () => {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {communities.map((community) => (
-            <Card key={community.id} className="hover:shadow-lg transition-shadow">
-              <CardHeader>
-                <div className="flex items-center justify-between mb-2">
-                  <Users className="w-8 h-8 text-primary" />
-                  <span className="text-sm text-muted-foreground flex items-center gap-1">
-                    <Users className="w-4 h-4" />
-                    {community.member_count}
-                  </span>
-                </div>
-                <CardTitle className="text-xl">{community.name}</CardTitle>
-                <CardDescription className="text-base">
-                  {community.description}
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-2">
-                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                    <CheckCircle className="w-4 h-4 text-primary" />
-                    <span>Faahfaahin iyo talo gaar ah</span>
+          {communities.map((community) => {
+            const userIsMember = isMember(community.id);
+            
+            return (
+              <Card key={community.id} className="hover:shadow-lg transition-shadow">
+                <CardHeader>
+                  <div className="flex items-center justify-between mb-2">
+                    <Users className="w-8 h-8 text-primary" />
+                    <div className="flex items-center gap-2">
+                      {userIsMember && (
+                        <span className="text-xs bg-primary/10 text-primary px-2 py-1 rounded-full">
+                          Xubin
+                        </span>
+                      )}
+                      <span className="text-sm text-muted-foreground flex items-center gap-1">
+                        <Users className="w-4 h-4" />
+                        {community.member_count}
+                      </span>
+                    </div>
                   </div>
-                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                    <CheckCircle className="w-4 h-4 text-primary" />
-                    <span>Wadaag khibradaha daryeelka</span>
+                  <CardTitle className="text-xl">{community.name}</CardTitle>
+                  <CardDescription className="text-base">
+                    {community.description}
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                      <CheckCircle className="w-4 h-4 text-primary" />
+                      <span>Faahfaahin iyo talo gaar ah</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                      <CheckCircle className="w-4 h-4 text-primary" />
+                      <span>Wadaag khibradaha daryeelka</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                      <CheckCircle className="w-4 h-4 text-primary" />
+                      <span>Taageero bulshada ah</span>
+                    </div>
                   </div>
-                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                    <CheckCircle className="w-4 h-4 text-primary" />
-                    <span>Taageero bulshada ah</span>
-                  </div>
-                </div>
-              </CardContent>
-              <CardFooter>
-                <Button
-                  className="w-full"
-                  onClick={() => handleJoinCommunity(community.id)}
-                  disabled={joiningId === community.id}
-                >
-                  {joiningId === community.id ? (
-                    <span className="flex items-center gap-2">
-                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-background"></div>
-                      Bixin...
-                    </span>
+                </CardContent>
+                <CardFooter className="flex gap-2">
+                  {userIsMember ? (
+                    <Button
+                      className="w-full"
+                      onClick={() => handleViewPosts(community)}
+                    >
+                      <BookOpen className="w-4 h-4 mr-2" />
+                      Eeg Maqaallada
+                    </Button>
                   ) : (
-                    'Ku Biir Hadda - $5'
+                    <Button
+                      className="w-full"
+                      onClick={() => handleJoinCommunity(community)}
+                      disabled={joiningId === community.id}
+                    >
+                      {joiningId === community.id ? (
+                        <span className="flex items-center gap-2">
+                          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-background"></div>
+                          Bixin...
+                        </span>
+                      ) : (
+                        'Ku Biir Hadda - $5'
+                      )}
+                    </Button>
                   )}
-                </Button>
-              </CardFooter>
-            </Card>
-          ))}
+                </CardFooter>
+              </Card>
+            );
+          })}
         </div>
 
+        {/* Payment Dialog */}
         <Dialog open={showPaymentDialog} onOpenChange={setShowPaymentDialog}>
           <DialogContent>
             <DialogHeader>
@@ -277,6 +420,109 @@ const Community = () => {
                   </>
                 ) : (
                   'Bixi $5'
+                )}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
+        {/* Posts Dialog */}
+        <Dialog open={showPostsDialog} onOpenChange={setShowPostsDialog}>
+          <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle className="flex items-center justify-between">
+                <span>{selectedCommunity?.name} - Maqaallada</span>
+                <Button 
+                  size="sm" 
+                  onClick={() => setShowCreatePostDialog(true)}
+                  className="gap-1"
+                >
+                  <Plus className="w-4 h-4" />
+                  Qor Maqaal
+                </Button>
+              </DialogTitle>
+              <DialogDescription>
+                Akhri maqaallada uu qoreen xubnaha bulshada
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-4 py-4">
+              {posts.length === 0 ? (
+                <div className="text-center py-8 text-muted-foreground">
+                  <BookOpen className="w-12 h-12 mx-auto mb-4 opacity-50" />
+                  <p>Weli ma jiraan maqaallo. Noqo kan ugu horreeya ee qora!</p>
+                </div>
+              ) : (
+                posts.map((post) => (
+                  <Card key={post.id}>
+                    <CardHeader>
+                      <CardTitle className="text-lg">{post.title}</CardTitle>
+                      <CardDescription className="flex items-center gap-1">
+                        <Calendar className="w-3 h-3" />
+                        {format(new Date(post.created_at), 'dd/MM/yyyy')}
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <p className="text-muted-foreground whitespace-pre-wrap">{post.content}</p>
+                    </CardContent>
+                  </Card>
+                ))
+              )}
+            </div>
+          </DialogContent>
+        </Dialog>
+
+        {/* Create Post Dialog */}
+        <Dialog open={showCreatePostDialog} onOpenChange={setShowCreatePostDialog}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Qor Maqaal Cusub</DialogTitle>
+              <DialogDescription>
+                La wadaag fikradahaaga iyo khibraddaada bulshada
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-4 py-4">
+              <div className="space-y-2">
+                <Label htmlFor="postTitle">Cinwaanka</Label>
+                <Input
+                  id="postTitle"
+                  placeholder="Geli cinwaanka maqaalka"
+                  value={newPostTitle}
+                  onChange={(e) => setNewPostTitle(e.target.value)}
+                  disabled={creatingPost}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="postContent">Qoraalka</Label>
+                <Textarea
+                  id="postContent"
+                  placeholder="Qor qoraalkaaga halkan..."
+                  value={newPostContent}
+                  onChange={(e) => setNewPostContent(e.target.value)}
+                  disabled={creatingPost}
+                  rows={6}
+                />
+              </div>
+            </div>
+            <DialogFooter>
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setShowCreatePostDialog(false);
+                  setNewPostTitle('');
+                  setNewPostContent('');
+                }}
+                disabled={creatingPost}
+              >
+                Ka Noqo
+              </Button>
+              <Button onClick={handleCreatePost} disabled={creatingPost}>
+                {creatingPost ? (
+                  <>
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-background mr-2"></div>
+                    Waa la dhigayaa...
+                  </>
+                ) : (
+                  'Dhig Maqaalka'
                 )}
               </Button>
             </DialogFooter>
