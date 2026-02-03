@@ -175,31 +175,40 @@ export type Database = {
       community_posts: {
         Row: {
           author_id: string
+          category: string | null
           community_id: string
           content: string
           created_at: string
+          excerpt: string | null
           id: string
           image_url: string | null
+          read_time: number | null
           title: string
           updated_at: string
         }
         Insert: {
           author_id: string
+          category?: string | null
           community_id: string
           content: string
           created_at?: string
+          excerpt?: string | null
           id?: string
           image_url?: string | null
+          read_time?: number | null
           title: string
           updated_at?: string
         }
         Update: {
           author_id?: string
+          category?: string | null
           community_id?: string
           content?: string
           created_at?: string
+          excerpt?: string | null
           id?: string
           image_url?: string | null
+          read_time?: number | null
           title?: string
           updated_at?: string
         }
