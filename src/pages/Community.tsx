@@ -2,8 +2,6 @@ import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Users, CheckCircle, ArrowLeft, LogOut, BookOpen, Calendar, Clock, Sparkles, Heart, Eye, ChevronRight, Star } from 'lucide-react';
@@ -48,12 +46,10 @@ const Community = () => {
   const [memberships, setMemberships] = useState<Membership[]>([]);
   const [posts, setPosts] = useState<CommunityPost[]>([]);
   const [loading, setLoading] = useState(true);
-  const [joiningId, setJoiningId] = useState<string | null>(null);
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [showPaymentDialog, setShowPaymentDialog] = useState(false);
   const [selectedCommunity, setSelectedCommunity] = useState<Community | null>(null);
-  const [phoneNumber, setPhoneNumber] = useState('');
   const [activeCategory, setActiveCategory] = useState('all');
   const [selectedPost, setSelectedPost] = useState<CommunityPost | null>(null);
   const [viewingCommunityId, setViewingCommunityId] = useState<string | null>(null);
@@ -175,51 +171,24 @@ const Community = () => {
     setSelectedPost(null);
   };
 
-  const handlePayment = async () => {
-    if (!phoneNumber) {
-      toast({
-        title: 'Khalad',
-        description: 'Fadlan geli lambarkaa telefoonka',
-        variant: 'destructive',
-      });
-      return;
-    }
-
+  const handlePayment = () => {
     if (!selectedCommunity || !user) return;
 
-    setJoiningId(selectedCommunity.id);
+    // Redirect to WhatsApp for payment
+    const whatsappNumber = '+252612607901';
+    const message = encodeURIComponent(
+      `Salaan! Waxaan rabaa inaan ku biiro bulshada "${selectedCommunity.name}". \n\nEmail: ${user.email}\nUser ID: ${user.id}`
+    );
+    const whatsappUrl = `https://wa.me/${whatsappNumber.replace('+', '')}?text=${message}`;
     
-    try {
-      const { data, error } = await supabase.functions.invoke('hormuud-payment', {
-        body: {
-          communityId: selectedCommunity.id,
-          userId: user.id,
-          amount: 5,
-          phoneNumber: phoneNumber,
-        },
-      });
-
-      if (error) throw error;
-
-      toast({
-        title: 'Guul!',
-        description: 'Waad ku guuleysatay inaad ku biirto bulshada. Lacagta waa la diray.',
-      });
-
-      setShowPaymentDialog(false);
-      setPhoneNumber('');
-      fetchCommunities();
-      fetchMemberships(user.id);
-    } catch (error: any) {
-      console.error('Error joining community:', error);
-      toast({
-        title: 'Khalad',
-        description: error.message || 'Wax khalad ah ayaa dhacay marka la bixinayo. Fadlan mar kale isku day.',
-        variant: 'destructive',
-      });
-    } finally {
-      setJoiningId(null);
-    }
+    window.open(whatsappUrl, '_blank');
+    
+    setShowPaymentDialog(false);
+    
+    toast({
+      title: 'WhatsApp ayaa furmay',
+      description: 'Fadlan nala soo xiriir WhatsApp si aad u dhamaystirto lacag bixinta.',
+    });
   };
 
   const handleSignOut = async () => {
@@ -547,16 +516,8 @@ const Community = () => {
                     <Button
                       className="w-full"
                       onClick={() => handleJoinCommunity(community)}
-                      disabled={joiningId === community.id}
                     >
-                      {joiningId === community.id ? (
-                        <span className="flex items-center gap-2">
-                          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-background"></div>
-                          Bixin...
-                        </span>
-                      ) : (
-                        'Ku Biir Hadda - $5'
-                      )}
+                      Ku Biir Hadda - $5
                     </Button>
                   )}
                 </CardFooter>
@@ -569,46 +530,33 @@ const Community = () => {
         <Dialog open={showPaymentDialog} onOpenChange={setShowPaymentDialog}>
           <DialogContent>
             <DialogHeader>
-              <DialogTitle>Bixin EVC Plus</DialogTitle>
+              <DialogTitle>Ku Biir Bulshada</DialogTitle>
               <DialogDescription>
-                Fadlan geli lambarkaa telefoonka EVC Plus si aad u bixiso $5 lacagta ku-biiritaanka
+                Si aad u bixiso $5 lacagta ku-biiritaanka, fadlan nagala soo xiriir WhatsApp
               </DialogDescription>
             </DialogHeader>
             <div className="space-y-4 py-4">
-              <div className="space-y-2">
-                <Label htmlFor="phone">Lambarka Telefoonka</Label>
-                <Input
-                  id="phone"
-                  placeholder="252xxxxxxxx"
-                  value={phoneNumber}
-                  onChange={(e) => setPhoneNumber(e.target.value)}
-                  disabled={!!joiningId}
-                />
+              <div className="text-center space-y-4">
+                <div className="w-16 h-16 mx-auto bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center">
+                  <svg className="w-8 h-8 text-green-600" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+                  </svg>
+                </div>
+                <p className="text-lg font-medium">+252 612 607 901</p>
                 <p className="text-sm text-muted-foreground">
-                  Geli lambarka telefoonka EVC Plus (tusaale: 252615123456)
+                  Riix badhanka hoose si aad nagu soo dirto WhatsApp
                 </p>
               </div>
             </div>
             <DialogFooter>
               <Button
                 variant="outline"
-                onClick={() => {
-                  setShowPaymentDialog(false);
-                  setPhoneNumber('');
-                }}
-                disabled={!!joiningId}
+                onClick={() => setShowPaymentDialog(false)}
               >
                 Ka Noqo
               </Button>
-              <Button onClick={handlePayment} disabled={!!joiningId}>
-                {joiningId ? (
-                  <>
-                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-background mr-2"></div>
-                    Bixin...
-                  </>
-                ) : (
-                  'Bixi $5'
-                )}
+              <Button onClick={handlePayment} className="bg-green-600 hover:bg-green-700">
+                Fur WhatsApp
               </Button>
             </DialogFooter>
           </DialogContent>
