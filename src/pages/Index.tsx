@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { ImageUpload } from '@/components/ImageUpload';
 import { AnalysisResult } from '@/components/AnalysisResult';
 import { AdSlot } from '@/components/AdSlot';
+import { ProductAds } from '@/components/ProductAds';
 import { useToast } from '@/components/ui/use-toast';
 import { Loader2, Users, LogOut, Globe, Sparkles, ArrowRight, Scan, Shield, Zap, Heart, Menu, X, Activity, Pill } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -423,6 +424,9 @@ const Index = () => {
                     </div>}
                 </div>}
             </section>
+
+            {/* Product Ads Section */}
+            <ProductAds />
 
             {/* Upload Section */}
             <section className="animate-slideUp opacity-0" style={{
