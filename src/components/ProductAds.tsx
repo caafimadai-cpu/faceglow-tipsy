@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import ultraWoman50 from '@/assets/products/ultra-woman-50.jpeg';
 import ultraMan50 from '@/assets/products/ultra-man-50.jpeg';
 import ultraManPalmetto from '@/assets/products/ultra-man-palmetto.jpeg';
@@ -16,7 +17,18 @@ const products = [
   { id: 6, image: magnesiumZinc, name: 'Magnesium & Zinc' },
 ];
 
+// Fisher-Yates shuffle algorithm
+const shuffleArray = <T,>(array: T[]): T[] => {
+  const shuffled = [...array];
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  }
+  return shuffled;
+};
+
 export const ProductAds = () => {
+  const shuffledProducts = useMemo(() => shuffleArray(products), []);
   const handleProductClick = (productName: string) => {
     const message = encodeURIComponent(
       `Salaan! Waxaan xiiseynayaa badeecadan: ${productName}. Fadlan ii soo dir macluumaad dheeraad ah.`
@@ -33,7 +45,7 @@ export const ProductAds = () => {
       </div>
       
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
-        {products.map((product) => (
+        {shuffledProducts.map((product) => (
           <button
             key={product.id}
             onClick={() => handleProductClick(product.name)}
